@@ -1,0 +1,28 @@
+{
+  "name": "emelbirb",
+  "version": "1.0.0",
+  "description": "Discord bot for the University of Auckland Esports Club",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "node build/index.js",
+    "watch": "tsc -p tsconfig.json -w"
+  },
+  "author": "Fraser McCallum",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^14.0.26",
+    "@types/require-all": "^3.0.1",
+    "chalk": "^4.1.0",
+    "discord.js": "^12.2.0",
+    "discord.js-commando": "git+https://github.com/discordjs/Commando.git",
+    "dotenv": "^8.2.0",
+    "figlet": "^1.5.0",
+    "require-all": "^3.0.0",
+    "ts-node": "^8.10.2"
+  },
+  "devDependencies": {
+    "@types/figlet": "^1.2.0",
+    "@types/ws": "^7.2.6",
+    "typescript": "^3.9.7"
+  }
+}
