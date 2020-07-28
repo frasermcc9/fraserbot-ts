@@ -51,6 +51,7 @@ export class Bot extends CommandoClient {
             .registerGroups([
                 ["core", "Core bot commands"],
                 ["moderation", "Moderation Commands"],
+                ["colors", "Colour Commands"],
             ])
             .registerCommandsIn({
                 filter: /^([^.].*)\.(js|ts)$/,
