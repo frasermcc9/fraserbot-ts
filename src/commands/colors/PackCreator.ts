@@ -14,8 +14,23 @@ export default class CreatePackCommand extends Command {
     }
 
     private readonly options = ["cancel", "continue"];
+    
+    private MC0:MessageCollector;
 
     async run(message: CommandoMessage, args: any): Promise<Message> {
+      this.MC0=new MessageCollector(message.channel,m=>m.author==message.author,{time:600*1000})
+      
+      this.MC0.once("collect",async data=>{
+        MC0.stop()
+        const m =data as Message
+        const candidate=findBestMatch(m.content,this.options).bestMatch.target;
+        if(candidate=="cancel"){
+          return msg.channel.send("Cancelled!")
+        }else{
+          this.recursiveHelper(message,[])
+        }
+      })
+      
         const MC0 = new MessageCollector(message.channel, (m) => m.author == message.author, {
             time: 30 * 1000,
         })
