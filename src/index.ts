@@ -1,5 +1,13 @@
 import Log from "./helpers/Log";
 import { Bot } from "./Bot";
+import { connect } from "./database/Database";
+
+export const DatabaseConnection = {
+    name: "emelbirb",
+    uri: "mongodb://localhost:27017",
+};
+
+connect();
 
 Bot.Get.start().catch((e) => {
     Log.critical("index", "Failed to startup bot and connect.", e);

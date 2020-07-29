@@ -1,8 +1,6 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { Message, VoiceChannel, Channel } from "discord.js";
-import { DataParser, DataWriter } from "../../data/DataParser";
-import { DataDirectory } from "../../constants/DataDirectory";
-import { ChannelDuplicatorSchema } from "../../data/ChannelDuplicator/ChannelDuplicatorSchema";
+import { ChannelDuplicatorModel } from "../../database/models/ChannelDuplicator/ChannelDuplicator.model";
 
 export default class ChannelDuplicatorCommand extends Command {
     constructor(client: CommandoClient) {
@@ -29,16 +27,14 @@ export default class ChannelDuplicatorCommand extends Command {
         }
         const vc = channel as VoiceChannel;
         const guild = message.guild.id;
-        let channels = DataParser<ChannelDuplicatorSchema>(
-            DataDirectory + "\\ChannelDuplicator\\ChannelDuplicator.json"
-        );
-        if (channels[guild] == undefined) {
-            channels[guild] = [vc.id];
-        } else {
-            channels[guild]?.push(vc.id);
-        }
-        await DataWriter(DataDirectory + "\\ChannelDuplicator\\ChannelDuplicator.json", JSON.stringify(channels));
 
-        return message.channel.send(`Channel ${vc.name} has been set as a duplicating channel.`);
+        const guildData = await ChannelDuplicatorModel.findOneOrCreate({ guildId: guild });
+        if (!guildData.channelIds.includes(vc.id)) {
+            guildData.addGuildChannel({ channelId: vc.id });
+            return message.channel.send(`Channel ${vc.name} has been set as a duplicating channel.`);
+        } else {
+            guildData.removeGuildChannel({ channelId: vc.id });
+            return message.channel.send(`Channel ${vc.name} has been removed as a duplicating channel.`);
+        }
     }
 }
