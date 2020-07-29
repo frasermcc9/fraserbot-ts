@@ -48,7 +48,11 @@ export default class CreatePackCommand extends Command {
 
         return message.channel.send("Colour Pack Created!");
     }
-
+    
+    /**
+     * Initial input handler for confirming the user wishes to make a pack
+     * @param message the invoking message
+     */
     private async userConfirm(message: CommandoMessage): Promise<void> {
         const replyMsg = await message.channel.send(this.userConfirmEmbed());
         return new Promise((res, rej) => {
@@ -66,6 +70,9 @@ export default class CreatePackCommand extends Command {
                 .on("end", () => rej("Ran out of time."));
         });
     }
+    /**
+     * Embed for userConfirm() method
+     */
     private userConfirmEmbed() {
         return new MessageEmbed()
             .setTitle("Colour Pack Creator")
@@ -144,7 +151,10 @@ export default class CreatePackCommand extends Command {
             const MC = this.createCollector(message, 120)
                 .on("collect", async (data) => {
                     const m = data as Message;
-                    if (m.content == "cancel") rej("Cancelled");
+                    if (m.content == "cancel") {
+                        MC.removeAllListeners();
+                        rej("Cancelled");
+                    }
                     if (m.deletable) m.delete();
                     msgData.push(m.content);
 
@@ -165,16 +175,26 @@ export default class CreatePackCommand extends Command {
                 .on("end", () => rej("Ran out of time."));
         });
     }
-
+    /**
+     * Embed generator for getMessageInfo() method
+     * @param title the instruction to follow
+     * @param eg an example entry
+     */
     private getMessageInfoEmbed(title: string, eg: string): MessageEmbed {
         return new MessageEmbed()
             .setTitle("Almost Finished!")
-            .setDescription("Here we will set up the message")
-            .addField(title, "For example: " + eg)
+            .setDescription(title)
+            .addField("Example", eg)
             .setFooter("Cancel at any time by saying 'cancel'.")
             .setColor("#03c6fc");
     }
 
+    /**
+     * final stage that creates the roles and outputs the messages
+     * @param message the original invoking message
+     * @param roleData the role data for the roles to be created
+     * @param msgData the data for the output message
+     */
     private async execute(message: CommandoMessage, roleData: RoleDataArgs[], msgData: GetMessageInfoArgs) {
         const output = new MessageEmbed()
             .setTitle(msgData.title)
