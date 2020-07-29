@@ -31,7 +31,7 @@ export default class CreatePackCommand extends Command {
     }
 
     /**
-     * Command entry point. Sends the first reply message and asks for confirmation. Calls recursive helper
+     * Command entry point. Handles overall command flow.
      * @param message the original message
      * @param args never
      */
@@ -48,7 +48,7 @@ export default class CreatePackCommand extends Command {
 
         return message.channel.send("Colour Pack Created!");
     }
-    
+
     /**
      * Initial input handler for confirming the user wishes to make a pack
      * @param message the invoking message
