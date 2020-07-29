@@ -1,10 +1,8 @@
 import { BotEvent } from "../Events.interface";
 import { Bot } from "../../Bot";
 import Log from "../../helpers/Log";
-import { GuildMember, VoiceState } from "discord.js";
-import { DataParser } from "../../data/DataParser";
-import { ChannelDuplicatorSchema } from "../../data/ChannelDuplicator/ChannelDuplicatorSchema";
-import { DataDirectory } from "../../constants/DataDirectory";
+import {  VoiceState } from "discord.js";
+import { ChannelDuplicatorModel } from "../../database/models/ChannelDuplicator/ChannelDuplicator.model";
 
 export default class UpdateMemberCount implements BotEvent {
     private client: Bot = Bot.Get;
@@ -13,19 +11,15 @@ export default class UpdateMemberCount implements BotEvent {
         this.client.on("voiceStateUpdate", this.updater);
     }
 
-    private updater = (oldState: VoiceState | undefined, newState: VoiceState) => {
-        const enabledChannels = DataParser<ChannelDuplicatorSchema>(
-            DataDirectory + "\\ChannelDuplicator\\ChannelDuplicator.json"
-        );
+    private updater = async (oldState: VoiceState | undefined, newState: VoiceState) => {
         const guildId = oldState?.guild.id ?? newState.guild.id;
+        const enabledChannels = await ChannelDuplicatorModel.getGuildChannels({ guildId: guildId });
         const channelId = newState.channelID;
 
         if (channelId == undefined) {
             //the member left a channel
             //delete it if its an enabled channel and its empty
-            
-            
-        } else if (enabledChannels[guildId].includes(channelId)) {
+        } else if (enabledChannels.includes(channelId)) {
             //the member joined an enabled channel
         }
     };
