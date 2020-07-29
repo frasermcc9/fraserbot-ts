@@ -1,8 +1,12 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, MessageCollector, Role } from "discord.js";
+import { Message, MessageEmbed, MessageCollector, Role, TextChannel } from "discord.js";
 import { findBestMatch } from "string-similarity";
 import { executionAsyncResource } from "async_hooks";
 
+/**
+ * Creators 'packs' of colours, an embed containing one or more roles (intended
+ * as colours) that users can select from.
+ */
 export default class CreatePackCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
@@ -14,124 +18,164 @@ export default class CreatePackCommand extends Command {
     }
 
     private readonly options = ["cancel", "continue"];
-    
-    private MC0:MessageCollector;
 
-    async run(message: CommandoMessage, args: any): Promise<Message> {
-      this.MC0=new MessageCollector(message.channel,m=>m.author==message.author,{time:600*1000})
-      
-      this.MC0.once("collect",async data=>{
-        MC0.stop()
-        const m =data as Message
-        const candidate=findBestMatch(m.content,this.options).bestMatch.target;
-        if(candidate=="cancel"){
-          return msg.channel.send("Cancelled!")
-        }else{
-          this.recursiveHelper(message,[])
-        }
-      })
-      
-        const MC0 = new MessageCollector(message.channel, (m) => m.author == message.author, {
-            time: 30 * 1000,
-        })
-            .once("collect", async (data) => {
-                MC0.stop();
-                const m = data as Message;
-                const candidate = findBestMatch(m.content, this.options).bestMatch.target;
-                if (candidate == "cancel") {
-                    return msg0.channel.send("Cancelled!");
-                } else {
-                    this.recursiveHelper(message, []);
-                }
-            })
-            .once("end", () => msg0.delete());
-        const msg0 = await message.channel.send(
-            new MessageEmbed()
-                .setTitle("Colour Pack Creator")
-                .setDescription("This guide will walk you through creating a colour pack!")
-                .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
-                .setColor("#03c6fc")
-        );
-        return msg0;
+    /**
+     * Creates a message collector with the given timeout
+     * @param message the original message
+     * @param timeout time in seconds before turning off collector
+     */
+    private createCollector(message: CommandoMessage, timeout: number = 30) {
+        return new MessageCollector(message.channel, (m) => m.author.id == message.author.id, {
+            time: timeout * 1000,
+        });
     }
 
-    private async recursiveHelper(message: CommandoMessage, roleData: { name: string; color: string }[]) {
-        const msg0 = await message.channel.send(
-            new MessageEmbed()
-                .setTitle("Create a new Colour")
-                .addField(
-                    "Instructions",
-                    "To create the settings of the colour, reply with the following syntax:\n [Name]|[HexColour]"
-                )
-                .addField("Example", "My Cool Role|#03c6fc")
-                .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
-                .setColor("#03c6fc")
-        );
-        const MC0 = new MessageCollector(message.channel, (m) => m.author == message.author, {
-            time: 30 * 1000,
-        })
-            .once("collect", async (data) => {
-                MC0.stop();
-                const m = data as Message;
-                if (/^.+\|#.+$/.test(m.content)) {
-                    const input = m.content.split("|");
-                    roleData.push({ name: input[0], color: input[1] });
-                    this.recursiveHelper(message, roleData);
-                } else {
+    /**
+     * Command entry point. Sends the first reply message and asks for confirmation. Calls recursive helper
+     * @param message the original message
+     * @param args never
+     */
+    async run(message: CommandoMessage, args: never): Promise<Message> {
+        try {
+            await this.userConfirm(message);
+
+            const roles = await this.getRolesToAdd(message);
+            const msgInfo = await this.getMessageInfo(message);
+            await this.execute(message, roles, msgInfo);
+        } catch (e) {
+            message.channel.send(e);
+        }
+
+        return message.channel.send("Colour Pack Created!");
+    }
+
+    private async userConfirm(message: CommandoMessage): Promise<void> {
+        const replyMsg = await message.channel.send(this.userConfirmEmbed());
+        return new Promise((res, rej) => {
+            this.createCollector(message, 30)
+                .once("collect", async (data) => {
+                    replyMsg.delete().catch(() => {});
+                    const m = data as Message;
                     const candidate = findBestMatch(m.content, this.options).bestMatch.target;
                     if (candidate == "cancel") {
-                        return msg0.channel.send("Cancelled!");
+                        rej("Cancelled!");
                     } else {
-                        this.finishHelper(message, roleData);
+                        res();
                     }
-                }
-            })
-            .once("end", () => msg0.delete());
+                })
+                .on("end", () => rej("Ran out of time."));
+        });
+    }
+    private userConfirmEmbed() {
+        return new MessageEmbed()
+            .setTitle("Colour Pack Creator")
+            .setDescription("This guide will walk you through creating a colour pack!")
+            .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
+            .setColor("#03c6fc");
     }
 
-    private async finishHelper(message: CommandoMessage, roleData: { name: string; color: string }[]) {
+    /**
+     * Gets roles to add from the command invoker.
+     * @param message the original message
+     */
+    private async getRolesToAdd(message: CommandoMessage): Promise<RoleDataArgs[]> {
+        const roleData: { name: string; color: string }[] = [];
+        const replyMsg = await message.channel.send(this.rolesToAddEmbed());
+        return new Promise((res, rej) => {
+            const MC = this.createCollector(message, 180)
+                .on("collect", async (data) => {
+                    const m = data as Message;
+
+                    if (/^.+\|#.+$/.test(m.content)) {
+                        //if message passes regex, add it to the array storing roles
+                        const input = m.content.split("|");
+                        roleData.push({ name: input[0], color: input[1] });
+                    } else {
+                        //otherwise check if it is cancel/continue
+                        MC.removeAllListeners();
+                        replyMsg.delete().catch(() => {});
+                        const candidate = findBestMatch(m.content, this.options).bestMatch.target;
+                        if (candidate == "cancel") {
+                            rej("Cancelled!");
+                        } else {
+                            res(roleData);
+                        }
+                    }
+                })
+                .on("end", () => rej("Ran out of time."));
+        });
+
+        //initiate collector
+    }
+    /**
+     * Embed for getRolesToAdd()
+     */
+    private rolesToAddEmbed(): MessageEmbed {
+        return new MessageEmbed()
+            .setTitle("Create a new Colour")
+            .addField(
+                "Instructions",
+                "To create the settings of the colour, reply with the following syntax:\n [Name]|[HexColour]"
+            )
+            .addField("Example", "My Cool Role|#03c6fc")
+            .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
+            .setColor("#03c6fc");
+    }
+
+    /**
+     * Gets info from the user about what should be inside the message. Called
+     * @param message
+     * @param roleData
+     */
+    private async getMessageInfo(message: CommandoMessage): Promise<GetMessageInfoArgs> {
+        const prompts = [
+            ["Please reply with the title of this pack", "My Cool Pack"],
+            ["Please describe this pack", "This is my cool pack"],
+            ["Please provide a sidebar colour for this pack", "#ffffff"],
+            ["Please provide an image URL for this pack", "MyImage.jpg"],
+            ["Please provide the channel ID you would like to output to", "12379812371237"],
+        ];
         const msgData: string[] = [];
-        const msg0 = await message.channel.send(
-            new MessageEmbed()
-                .setTitle("Almost Finished!")
-                .setDescription("Here we will set up the message")
-                .addField(
-                    "Instructions",
-                    "Reply with the information in the following order in separate messages:\nPack Name\nPack Description\nSidebar Hex Colour\nMessage Image/Gif"
-                )
-                .addField("Example", "Cool Pack\nMy first pack\n#ffffff\nsomeimage.jpeg")
-                .setFooter("Cancel at any time by saying 'cancel'.")
-                .setColor("#03c6fc")
+        const replyMsg = await message.channel.send(
+            this.getMessageInfoEmbed(prompts[msgData.length][0], prompts[msgData.length][1])
         );
-        const MC0 = new MessageCollector(message.channel, (m) => m.author == message.author, {
-            time: 120 * 1000,
-        })
-            .on("collect", async (data) => {
-                const m = data as Message;
-                if (m.content == "cancel") {
-                    return message.channel.send("Cancelled!");
-                }
-                msgData.push(m.content);
-                if (msgData.length == 4) {
-                    msg0.delete();
-                    MC0.stop();
-                    this.execute(message, roleData, {
-                        title: msgData[0],
-                        description: msgData[1],
-                        color: msgData[2],
-                        uri: msgData[3],
-                    });
-                }
-            })
 
-            .once("end", () => msg0.delete());
+        return new Promise((res, rej) => {
+            const MC = this.createCollector(message, 120)
+                .on("collect", async (data) => {
+                    const m = data as Message;
+                    if (m.content == "cancel") rej("Cancelled");
+                    if (m.deletable) m.delete();
+                    msgData.push(m.content);
+
+                    if (msgData.length == prompts.length) {
+                        replyMsg.delete();
+                        MC.removeAllListeners();
+                        res({
+                            title: msgData[0],
+                            description: msgData[1],
+                            color: msgData[2],
+                            uri: msgData[3],
+                            channel: msgData[4],
+                        });
+                    } else {
+                        replyMsg.edit(this.getMessageInfoEmbed(prompts[msgData.length][0], prompts[msgData.length][1]));
+                    }
+                })
+                .on("end", () => rej("Ran out of time."));
+        });
     }
 
-    private async execute(
-        message: CommandoMessage,
-        roleData: { name: string; color: string }[],
-        msgData: { title: string; description: string; color: string; uri: string }
-    ) {
+    private getMessageInfoEmbed(title: string, eg: string): MessageEmbed {
+        return new MessageEmbed()
+            .setTitle("Almost Finished!")
+            .setDescription("Here we will set up the message")
+            .addField(title, "For example: " + eg)
+            .setFooter("Cancel at any time by saying 'cancel'.")
+            .setColor("#03c6fc");
+    }
+
+    private async execute(message: CommandoMessage, roleData: RoleDataArgs[], msgData: GetMessageInfoArgs) {
         const output = new MessageEmbed()
             .setTitle(msgData.title)
             .setDescription(msgData.description)
@@ -146,8 +190,25 @@ export default class CreatePackCommand extends Command {
             );
             if (addedRoles.length == roleData.length) {
                 output.addField("Roles", addedRoles.join("\n"));
-                return message.say(output);
+                const outputChannel = message.guild.channels.cache.find((c) => c.id == msgData.channel);
+                if (outputChannel == undefined || outputChannel.type != "text") {
+                    Promise.reject("Invalid channel ID provided.");
+                } else {
+                    (outputChannel as TextChannel).send(output);
+                }
             }
         });
     }
+}
+
+interface RoleDataArgs {
+    name: string;
+    color: string;
+}
+interface GetMessageInfoArgs {
+    title: string;
+    description: string;
+    color: string;
+    uri: string;
+    channel: string;
 }
