@@ -95,10 +95,10 @@ export default class CreatePackCommand extends Command {
                 .on("collect", async (data) => {
                     const m = data as Message;
 
-                    if (/^.+\|#.+$/.test(m.content)) {
+                    if (/^.+\#.+$/.test(m.content)) {
                         //if message passes regex, add it to the array storing roles
-                        const input = m.content.split("|");
-                        roleData.push({ name: input[0], color: input[1] });
+                        const input = m.content.split("#");
+                        roleData.push({ name: input[0], color: "#" + input[1] });
                     } else {
                         //otherwise check if it is cancel/continue
                         MC.removeAllListeners();
@@ -124,9 +124,9 @@ export default class CreatePackCommand extends Command {
             .setTitle("Create a new Colour")
             .addField(
                 "Instructions",
-                "To create the settings of the colour, reply with the following syntax:\n [Name]|[HexColour]"
+                "To create the settings of the colour, reply with the following syntax:\n [Name]#[HexColour]"
             )
-            .addField("Example", "My Cool Role|#03c6fc")
+            .addField("Example", "My Cool Role#03c6fc")
             .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
             .setColor("#03c6fc");
     }
