@@ -1,0 +1,12 @@
+⭐| Star Guardian Pink|#ffb3c3
+⭐| Star Guardian Purple|#c6acc9
+⭐| Star Guardian Orange|#fbceb9
+⭐| Star Guardian Blue|#a8cfd5
+
+Name: Star Guardian Colour Pack
+
+Description: In a vast and dark universe, young warriors are chosen by fate to protect the light of the stars. They are destined to burn bright, but collapse as furiously as they burn.
+
+BG: #fa50d8
+
+Img: https://cdn.discordapp.com/attachments/702363654636699650/738004955956510740/SG-min.gif
