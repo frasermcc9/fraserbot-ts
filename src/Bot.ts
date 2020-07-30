@@ -34,14 +34,16 @@ export class Bot extends CommandoClient {
                 Log.error("Bot", "No token was provided.");
                 return reject(new Error("REPLACEMENT_BOT_TOKEN is not provided"));
             }
+            this.once("ready", () => {
+                Log.trace("Bot", `Bot logged in as ${this.user?.tag}`);
+                this.registerCommands();
+                this.registerEvents();
+                resolve();
+            });
             await this.login(process.env.TOKEN).catch((e) => {
                 Log.error("Bot", "Bot failed to log in.", e);
                 reject();
             });
-            Log.trace("Bot", `Bot logged in as ${this.user?.tag}`);
-            this.registerCommands();
-            this.registerEvents();
-            resolve();
         });
     }
 
