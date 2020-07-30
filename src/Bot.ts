@@ -21,10 +21,6 @@ export class Bot extends CommandoClient {
             invite: "https://discord.gg/rwFhQ9V",
             disableMentions: "everyone",
         });
-
-        this.on("commandError", (command, error, message) => {
-            Log.error("Command Error", `Error with ${command.name}. Message sent: ${message.content}.`, error);
-        });
     }
 
     async start(): Promise<void> {
@@ -35,7 +31,7 @@ export class Bot extends CommandoClient {
                 return reject(new Error("REPLACEMENT_BOT_TOKEN is not provided"));
             }
             this.once("ready", () => {
-                Log.trace("Bot", `Bot logged in as ${this.user?.tag}`);
+                Log.info("Bot", `Bot logged in as ${this.user?.tag}`);
                 this.registerCommands();
                 this.registerEvents();
                 resolve();
@@ -59,12 +55,10 @@ export class Bot extends CommandoClient {
                 filter: /^([^.].*)\.(js|ts)$/,
                 dirname: path.join(__dirname, "commands"),
             });
-        Log.trace("Bot", "Bot commands registered successfully");
+        Log.info("Bot", "Bot commands registered successfully");
     }
 
     private registerEvents(): void {
-        new EventManager();
-        this.on("debug", (info) => Log.info("Bot", info));
-        Log.trace("Bot", "Bot events registered successfully");
+        new EventManager().init();
     }
 }

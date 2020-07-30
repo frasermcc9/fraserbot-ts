@@ -2,6 +2,9 @@ import chalk = require("chalk");
 import figlet = require("figlet");
 
 export default abstract class Log {
+    static debug(src: string, msg: string): void {
+        this.log("DEBUG", src, msg);
+    }
     static trace(src: string, msg: string, error?: Error): void {
         this.log("TRACE", src, msg, error);
     }
@@ -29,6 +32,8 @@ export default abstract class Log {
     }
     private static colorResolver(severity: Severity) {
         switch (severity) {
+            case "DEBUG":
+                return chalk.grey;
             case "TRACE":
                 return chalk.whiteBright;
             case "INFO":
@@ -51,4 +56,4 @@ export default abstract class Log {
     }
 }
 
-type Severity = "TRACE" | "INFO" | "WARN" | "ERROR" | "CRITICAL";
+type Severity = "DEBUG" | "TRACE" | "INFO" | "WARN" | "ERROR" | "CRITICAL";
