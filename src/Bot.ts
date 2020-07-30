@@ -50,6 +50,7 @@ export class Bot extends CommandoClient {
                 ["core", "Core bot commands"],
                 ["moderation", "Moderation Commands"],
                 ["colors", "Colour Commands"],
+                ["fun","Fun Commands"]
             ])
             .registerCommandsIn({
                 filter: /^([^.].*)\.(js|ts)$/,
