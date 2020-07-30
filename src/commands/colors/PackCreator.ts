@@ -36,17 +36,19 @@ export default class CreatePackCommand extends Command {
      * @param args never
      */
     async run(message: CommandoMessage, args: never): Promise<Message> {
+        let finalMsg;
         try {
             await this.userConfirm(message);
 
             const roles = await this.getRolesToAdd(message);
             const msgInfo = await this.getMessageInfo(message);
             await this.execute(message, roles, msgInfo);
+            finalMsg = message.channel.send("Colour Pack Created!");
         } catch (e) {
-            message.channel.send(e);
+            finalMsg = message.channel.send(e);
         }
 
-        return message.channel.send("Colour Pack Created!");
+        return finalMsg;
     }
 
     /**
