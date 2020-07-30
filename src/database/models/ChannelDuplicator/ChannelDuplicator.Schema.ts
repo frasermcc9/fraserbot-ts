@@ -21,7 +21,7 @@ const ChannelDuplicatorSchema = new Schema({
 });
 
 ChannelDuplicatorSchema.statics.findOneOrCreate = findOneOrCreate;
-ChannelDuplicatorSchema.statics.getGuildChannel = getGuildChannels;
+ChannelDuplicatorSchema.statics.getGuildChannels = getGuildChannels;
 
 ChannelDuplicatorSchema.methods.addGuildChannel = addGuildChannel;
 ChannelDuplicatorSchema.methods.removeGuildChannel = removeGuildChannel;
