@@ -19,6 +19,7 @@ export default class ReactRoleCommand extends Command {
             group: "colors",
             memberName: "reactrole",
             description: "Gives users a role when they react.",
+            guildOnly: true,
             args: [
                 {
                     key: "channel",
@@ -45,20 +46,19 @@ export default class ReactRoleCommand extends Command {
     }
 
     async run(message: CommandoMessage, { channel, messageId, reaction, role }: ICommandArgs): Promise<Message> {
+        //If a custom emoji is used, change it into correct form
         if (reaction.startsWith("<")) {
             reaction = reaction.match(/(\d+)/)![0];
         }
+        //Get guild data from database
         const guildData = await ReactMessageModel.findOneOrCreate({ guildId: message.guild.id });
+
+        //check if channel is right type, and cast to text channel if it is
         if (channel.type != "text") {
             Log.warn("React Role", "Incorrect voice channel type used when calling command.");
             return message.channel.send("Please use a text channel for this command.");
         }
-
-        const guildChannel = message.guild.channels.resolve(channel.id) as null | TextChannel;
-        if (guildChannel == null) {
-            Log.warn("React Role", `Requested channel ${channel.id} was not found`);
-            return message.channel.send("This channel was not found.");
-        }
+        const guildChannel = channel as TextChannel;
 
         try {
             const rxnMessage = await guildChannel.messages.fetch(messageId);
