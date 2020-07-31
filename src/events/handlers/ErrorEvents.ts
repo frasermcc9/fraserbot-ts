@@ -2,7 +2,7 @@ import { BotEvent } from "../Events.interface";
 import { Bot } from "../../Bot";
 import Log from "../../helpers/Log";
 import { GuildMember } from "discord.js";
-import { MemberCountModel } from "../../database/models/MemberCount/MemberCount.model";
+import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
 
 export default class DebugOutput implements BotEvent {
     private client: Bot = Bot.Get;

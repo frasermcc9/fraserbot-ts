@@ -1,6 +1,6 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { Message, VoiceChannel, Channel } from "discord.js";
-import { MemberCountModel } from "../../database/models/MemberCount/MemberCount.model";
+import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
 
 export default class MemberCounterCommand extends Command {
     constructor(client: CommandoClient) {
@@ -10,6 +10,7 @@ export default class MemberCounterCommand extends Command {
             group: "moderation",
             memberName: "membercounter",
             description: "Set up a channel to count member changes.",
+            userPermissions: ["ADMINISTRATOR"],
             args: [
                 {
                     key: "channel",
@@ -27,7 +28,7 @@ export default class MemberCounterCommand extends Command {
         const vc = channel as VoiceChannel;
         const guild = message.guild.id;
 
-        const guildData = await MemberCountModel.findOneOrCreate({ guildId: guild });
+        const guildData = await ServerSettingsModel.findOneOrCreate({ guildId: guild });
         guildData.setMemberCountChannel({ channelId: vc.id });
         return message.channel.send(`${vc.name} has been set as the member count channel.`);
     }

@@ -14,6 +14,7 @@ export default class CreatePackCommand extends Command {
             group: "colors",
             memberName: "createpack",
             description: "Setup guide for creating a colour-pack.",
+            userPermissions: ["ADMINISTRATOR"],
         });
     }
 

@@ -2,7 +2,7 @@ import { BotEvent } from "../Events.interface";
 import { Bot } from "../../Bot";
 import Log from "../../helpers/Log";
 import { GuildMember } from "discord.js";
-import { MemberCountModel } from "../../database/models/MemberCount/MemberCount.model";
+import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
 
 export default class UpdateMemberCount implements BotEvent {
     private client: Bot = Bot.Get;
@@ -16,7 +16,7 @@ export default class UpdateMemberCount implements BotEvent {
     private updater = async (member: GuildMember) => {
         const size = member.guild.memberCount;
 
-        const channelData = await MemberCountModel.findOneOrCreate({ guildId: member.guild.id });
+        const channelData = await ServerSettingsModel.findOneOrCreate({ guildId: member.guild.id });
         const channelId = channelData.getMemberCountChannel();
         const channel = member.guild.channels.cache.find((c) => c.id == channelId);
         
