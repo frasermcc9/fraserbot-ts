@@ -22,6 +22,7 @@ export default class ReactRoleCommand extends Command {
             description: "Gives users a role when they react.",
             userPermissions: ["ADMINISTRATOR"],
             guildOnly: true,
+            userPermissions:["ADMINISTRATOR"],
             args: [
                 {
                     key: "channel",

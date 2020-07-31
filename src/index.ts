@@ -3,7 +3,7 @@ import { Bot } from "./Bot";
 import { connect } from "./database/Database";
 
 export const DatabaseConnection = {
-    name: "fraserbot-ts",
+    name: "emelbirb",
     uri: "mongodb://localhost:27017",
 };
 
