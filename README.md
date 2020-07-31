@@ -18,8 +18,8 @@ tsc
 
 ### Create Environmental Variables
 
-Create a project root level file called `.env` and add two lines:
-`TOKEN = DISCORD_TOKEN`
+Create a project root level file called `.env` and add two lines: <br /> \
+`TOKEN = DISCORD_TOKEN`<br /> \
 `DATABASE = DATABASE_NAME`
 
 ### Run
