@@ -1,14 +1,5 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import {
-    Message,
-    Channel,
-    Role,
-    TextChannel,
-    ReactionCollector,
-    ReactionEmoji,
-    User,
-    MessageReaction,
-} from "discord.js";
+import { Message, Channel, Role, TextChannel, ReactionCollector, User, MessageReaction } from "discord.js";
 import { ReactMessageModel } from "../../database/models/ReactMessage/ReactMessage.model";
 import Log from "../../helpers/Log";
 import { Bot } from "../../Bot";
@@ -22,7 +13,6 @@ export default class ReactRoleCommand extends Command {
             description: "Gives users a role when they react.",
             userPermissions: ["ADMINISTRATOR"],
             guildOnly: true,
-            userPermissions:["ADMINISTRATOR"],
             args: [
                 {
                     key: "channel",
