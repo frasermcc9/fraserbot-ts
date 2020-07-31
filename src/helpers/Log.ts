@@ -22,7 +22,7 @@ export default abstract class Log {
         process.exit();
     }
     static logo(): void {
-        console.log(chalk.blue(figlet.textSync("Fraserbot-ts")));
+        console.log(chalk.blue(figlet.textSync("Fraserbot-Ts")));
         console.log();
     }
 
