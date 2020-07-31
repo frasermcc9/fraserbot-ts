@@ -3,7 +3,7 @@ import { Bot } from "./Bot";
 import { connect } from "./database/Database";
 
 export const DatabaseConnection = {
-    name: "emelbirb",
+    name: process.env.DATABASE,
     uri: "mongodb://localhost:27017",
 };
 
