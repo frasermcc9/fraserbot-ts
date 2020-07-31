@@ -11,6 +11,7 @@ import {
 } from "discord.js";
 import { ReactMessageModel } from "../../database/models/ReactMessage/ReactMessage.model";
 import Log from "../../helpers/Log";
+import { Bot } from "../../Bot";
 
 export default class ReactRoleCommand extends Command {
     constructor(client: CommandoClient) {
@@ -72,7 +73,7 @@ export default class ReactRoleCommand extends Command {
                 return u.bot == false && (r.emoji.name == reaction || r.emoji.id == reaction);
             };
 
-            new ReactionCollector(rxnMessage, filter, { dispose: true })
+            const collector = new ReactionCollector(rxnMessage, filter, { dispose: true })
                 .on("collect", async (r: MessageReaction, u: User) => {
                     const member = await r.message.guild?.members.fetch(u.id);
                     member?.roles.add(role);
@@ -86,6 +87,7 @@ export default class ReactRoleCommand extends Command {
                     if (sepRole) if (member?.roles.color == sepRole) await member?.roles.remove(sepRole);
                     Log.trace("React Role", `Removed role ${role.name} from ${u.username}.`);
                 });
+            Bot.Get.storeReactionListener(collector, reaction);
         } catch (e) {
             Log.warn("React Role", `Failed to react to message ${messageId} with ${reaction}.`, e);
             return message.channel.send("This reaction could not be added.");

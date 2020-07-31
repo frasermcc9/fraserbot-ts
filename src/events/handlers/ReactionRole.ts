@@ -64,7 +64,7 @@ export default class ReactionRole implements BotEvent {
                 };
 
                 //Add listeners
-                new ReactionCollector(rxnMessage, filter, { dispose: true })
+                const collector = new ReactionCollector(rxnMessage, filter, { dispose: true })
                     .on("collect", async (r: MessageReaction, u: User) => {
                         const member = await r.message.guild?.members.fetch(u.id);
                         member?.roles.add(rxnRole);
@@ -78,6 +78,8 @@ export default class ReactionRole implements BotEvent {
                         if (sepRole) if (member?.roles.color == sepRole) await member?.roles.remove(sepRole);
                         Log.trace("React Role", `Removed role ${rxnRole.name} from ${u.username}.`);
                     });
+
+                Bot.Get.storeReactionListener(collector, msg.reaction);
 
                 Log.trace(
                     "Reaction Role Init",

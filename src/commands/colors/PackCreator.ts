@@ -13,6 +13,7 @@ import { findBestMatch } from "string-similarity";
 import { executionAsyncResource } from "async_hooks";
 import Log from "../../helpers/Log";
 import { ReactMessageModel } from "../../database/models/ReactMessage/ReactMessage.model";
+import { Bot } from "../../Bot";
 
 /**
  * Creators 'packs' of colours, an embed containing one or more roles (intended
@@ -274,7 +275,7 @@ export default class CreatePackCommand extends Command {
                 u.bot == false && (r.emoji.name == reaction || r.emoji.id == reaction);
 
             await rMsg.react(reaction);
-            new ReactionCollector(rMsg, filter, { dispose: true })
+            const collector = new ReactionCollector(rMsg, filter, { dispose: true })
                 .on("collect", async (r: MessageReaction, u: User) => {
                     const member = await r.message.guild?.members.fetch(u.id);
                     member?.roles.add(role);
@@ -288,6 +289,8 @@ export default class CreatePackCommand extends Command {
                     if (sepRole) if (member?.roles.color == sepRole) await member?.roles.remove(sepRole);
                     Log.trace("React Role", `Removed role ${role.name} from ${u.username}.`);
                 });
+
+            Bot.Get.storeReactionListener(collector, reaction);
 
             await guildData.addReactionListener({
                 channelId: rMsg.channel.id,
