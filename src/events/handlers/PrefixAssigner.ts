@@ -12,7 +12,10 @@ export default class UpdateMemberCount implements BotEvent {
         this.client.guilds.cache.forEach(async (guild) => {
             const settings = await ServerSettingsModel.findOneOrCreate({ guildId: guild.id });
             const prefix = settings.getPrefix();
-            Object.defineProperty(guild, "commandPrefix", { value: prefix ?? this.client.commandPrefix });
+            Object.defineProperty(guild, "commandPrefix", {
+                value: prefix ?? this.client.commandPrefix,
+                writable: true,
+            });
         });
     }
 }

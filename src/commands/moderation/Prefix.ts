@@ -31,6 +31,7 @@ export default class PrefixCommand extends Command {
         } else {
             pref = pref.toLowerCase();
             guildSettings.setPrefix({ prefix: pref });
+            message.guild.commandPrefix = pref;
             return message.channel.send(`This server's command prefix is now ${pref}!`);
         }
     }
