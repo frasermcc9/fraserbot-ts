@@ -11,6 +11,7 @@ export default class ChannelDuplicatorCommand extends Command {
             memberName: "channelduplicator",
             description:
                 "Setup a new voice channel for duplication (members who join will temporarily create a new voice channel for themselves).",
+            userPermissions: ["ADMINISTRATOR"],
             args: [
                 {
                     key: "channel",

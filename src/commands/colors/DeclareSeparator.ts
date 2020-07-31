@@ -19,6 +19,7 @@ export default class DeclareSeparatorCommand extends Command {
             group: "colors",
             memberName: "declareseparator",
             description: "Declares a separator role for colours.",
+            userPermissions:["ADMINISTRATOR"],
             args: [
                 {
                     key: "role",

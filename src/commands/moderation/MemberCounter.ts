@@ -10,6 +10,7 @@ export default class MemberCounterCommand extends Command {
             group: "moderation",
             memberName: "membercounter",
             description: "Set up a channel to count member changes.",
+            userPermissions:["ADMINISTRATOR"],
             args: [
                 {
                     key: "channel",
