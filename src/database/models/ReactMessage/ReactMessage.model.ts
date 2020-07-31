@@ -22,6 +22,10 @@ export interface IReactMessageDocument extends IReactionMessage, Document {
         }: { messageId: string; channelId: string; reaction: string; roleId: string }
     ): Promise<void>;
     declareSeparator(this: IReactMessageDocument, { roleId }: { roleId: string }): Promise<void>;
+    removeReactionListener(
+        this: IReactMessageDocument,
+        { messageId, reaction }: { messageId: string; reaction: string }
+    ): Promise<void>;
 }
 export interface IReactMessageModel extends Model<IReactMessageDocument> {
     findOneOrCreate(this: IReactMessageModel, { guildId }: { guildId: string }): Promise<IReactMessageDocument>;

@@ -1,7 +1,19 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, MessageCollector, Role, TextChannel } from "discord.js";
+import {
+    Message,
+    MessageEmbed,
+    MessageCollector,
+    Role,
+    TextChannel,
+    MessageReaction,
+    User,
+    ReactionCollector,
+} from "discord.js";
 import { findBestMatch } from "string-similarity";
 import { executionAsyncResource } from "async_hooks";
+import Log from "../../helpers/Log";
+import { ReactMessageModel } from "../../database/models/ReactMessage/ReactMessage.model";
+import { Bot } from "../../Bot";
 
 /**
  * Creators 'packs' of colours, an embed containing one or more roles (intended
@@ -14,7 +26,15 @@ export default class CreatePackCommand extends Command {
             group: "colors",
             memberName: "createpack",
             description: "Setup guide for creating a colour-pack.",
-            userPermissions:["ADMINISTRATOR"],
+            userPermissions: ["ADMINISTRATOR"],
+            guildOnly: true,
+            args: [
+                {
+                    key: "auto",
+                    prompt: "Should I automatically add reactions to this message?",
+                    type: "boolean",
+                },
+            ],
         });
     }
 
@@ -32,18 +52,19 @@ export default class CreatePackCommand extends Command {
     }
 
     /**
-     * Command entry point. Handles overall command flow.
-     * @param message the original message
-     * @param args never
+     * initial command entry point
+     * @param message the calling message
+     * @param param1 input args
      */
-    async run(message: CommandoMessage, args: never): Promise<Message> {
+    async run(message: CommandoMessage, { auto }: { auto: boolean }): Promise<Message> {
         let finalMsg;
         try {
             await this.userConfirm(message);
 
             const roles = await this.getRolesToAdd(message);
             const msgInfo = await this.getMessageInfo(message);
-            await this.execute(message, roles, msgInfo);
+            const reactMsg = await this.execute(message, roles, msgInfo);
+            if (auto) await this.executeReactions(reactMsg.msg, reactMsg.roles);
             finalMsg = message.channel.send("Colour Pack Created!");
         } catch (e) {
             finalMsg = message.channel.send(e);
@@ -137,7 +158,7 @@ export default class CreatePackCommand extends Command {
      * @param message
      * @param roleData
      */
-    private async getMessageInfo(message: CommandoMessage): Promise<GetMessageInfoArgs> {
+    private async getMessageInfo(message: CommandoMessage): Promise<MsgInfoArgs> {
         const prompts = [
             ["Please reply with the title of this pack", "My Cool Pack"],
             ["Please describe this pack", "This is my cool pack"],
@@ -198,7 +219,11 @@ export default class CreatePackCommand extends Command {
      * @param roleData the role data for the roles to be created
      * @param msgData the data for the output message
      */
-    private async execute(message: CommandoMessage, roleData: RoleDataArgs[], msgData: GetMessageInfoArgs) {
+    private async execute(
+        message: CommandoMessage,
+        roleData: RoleDataArgs[],
+        msgData: MsgInfoArgs
+    ): Promise<{ msg: Message; roles: Role[] }> {
         const output = new MessageEmbed()
             .setTitle(msgData.title)
             .setDescription(msgData.description)
@@ -207,19 +232,72 @@ export default class CreatePackCommand extends Command {
 
         const addedRoles: Role[] = [];
 
-        roleData.forEach(async (role, idx) => {
-            addedRoles.push(
-                await message.guild.roles.create({ data: { name: role.name, color: role.color, position: 0 } })
-            );
-            if (addedRoles.length == roleData.length) {
-                output.addField("Roles", addedRoles.join("\n"));
-                const outputChannel = message.guild.channels.cache.find((c) => c.id == msgData.channel);
-                if (outputChannel == undefined || outputChannel.type != "text") {
-                    Promise.reject("Invalid channel ID provided.");
-                } else {
-                    (outputChannel as TextChannel).send(output);
+        return new Promise((res, rej) => {
+            roleData.forEach(async (role, idx) => {
+                addedRoles.push(
+                    await message.guild.roles.create({ data: { name: role.name, color: role.color, position: 0 } })
+                );
+                if (addedRoles.length == roleData.length) {
+                    output.addField("Roles", addedRoles.join("\n"));
+                    const outputChannel = message.guild.channels.cache.find((c) => c.id == msgData.channel);
+                    if (outputChannel == undefined || outputChannel.type != "text") {
+                        rej("Invalid channel ID provided.");
+                    } else {
+                        const msg = await (outputChannel as TextChannel).send(output);
+                        res({ msg: msg, roles: addedRoles });
+                    }
                 }
-            }
+            });
+        });
+    }
+
+    /**
+     * Reacts to the message automatically
+     * @param rMsg the message to react to (the one created by this command)
+     * @param roles the roles that are in this pack
+     */
+    private async executeReactions(rMsg: Message, roles: Role[]) {
+        if (roles.length > 10) {
+            Log.error("Pack Creator", "Cannot auto create role reactions with more than 10 roles");
+            return;
+        }
+        const reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
+        const guildData = await ReactMessageModel.findOneOrCreate({ guildId: rMsg.guild!.id });
+
+        let sepRole: Role | null;
+        if (guildData.separatorRole && rMsg.guild) sepRole = await rMsg.guild.roles.fetch(guildData.separatorRole);
+
+        //for each role, react with the next emoji, add the listener to it, add
+        //it to the database.
+        roles.forEach(async (role, idx) => {
+            const reaction = reactions[idx];
+            const filter = (r: MessageReaction, u: User) =>
+                u.bot == false && (r.emoji.name == reaction || r.emoji.id == reaction);
+
+            await rMsg.react(reaction);
+            const collector = new ReactionCollector(rMsg, filter, { dispose: true })
+                .on("collect", async (r: MessageReaction, u: User) => {
+                    const member = await r.message.guild?.members.fetch(u.id);
+                    member?.roles.add(role);
+                    if (sepRole) member?.roles.add(sepRole);
+                    Log.trace("React Role", `Added role ${role.name} to ${u.username}.`);
+                })
+                .on("remove", async (r: MessageReaction, u: User) => {
+                    let member = await r.message.guild?.members.fetch(u.id);
+                    member = await member?.roles.remove(role);
+                    //remove the separator if it is now the highest colour of the user
+                    if (sepRole) if (member?.roles.color == sepRole) await member?.roles.remove(sepRole);
+                    Log.trace("React Role", `Removed role ${role.name} from ${u.username}.`);
+                });
+
+            Bot.Get.storeReactionListener(collector, reaction);
+
+            await guildData.addReactionListener({
+                channelId: rMsg.channel.id,
+                messageId: rMsg.id,
+                reaction: reaction,
+                roleId: role.id,
+            });
         });
     }
 }
@@ -228,7 +306,7 @@ interface RoleDataArgs {
     name: string;
     color: string;
 }
-interface GetMessageInfoArgs {
+interface MsgInfoArgs {
     title: string;
     description: string;
     color: string;

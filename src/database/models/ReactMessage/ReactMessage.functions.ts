@@ -28,6 +28,16 @@ export async function addReactionListener(
     this.setLastUpdated();
 }
 
+export async function removeReactionListener(
+    this: IReactMessageDocument,
+    { messageId, reaction }: { messageId: string; reaction: string }
+): Promise<void> {
+    const idx = this.messages.findIndex((rr) => rr.messageId == messageId && rr.reaction == reaction);
+    this.messages.splice(idx, 1);
+
+    this.setLastUpdated();
+}
+
 export async function declareSeparator(this: IReactMessageDocument, { roleId }: { roleId: string }): Promise<void> {
     this.separatorRole = roleId;
     this.setLastUpdated();

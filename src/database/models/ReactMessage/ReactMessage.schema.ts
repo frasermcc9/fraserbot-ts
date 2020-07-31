@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { findOneOrCreate, setLastUpdated, addReactionListener, declareSeparator } from "./ReactMessage.functions";
+import { findOneOrCreate, setLastUpdated, addReactionListener, declareSeparator, removeReactionListener } from "./ReactMessage.functions";
 
 const ReactMessageSchema = new Schema({
     guildId: { type: String, unique: true },
@@ -26,6 +26,7 @@ ReactMessageSchema.statics.findOneOrCreate = findOneOrCreate;
 
 ReactMessageSchema.methods.setLastUpdated = setLastUpdated;
 ReactMessageSchema.methods.addReactionListener = addReactionListener;
+ReactMessageSchema.methods.removeReactionListener = removeReactionListener;
 ReactMessageSchema.methods.declareSeparator = declareSeparator;
 
 export default ReactMessageSchema;

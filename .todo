@@ -1,4 +1,0 @@
-- [] Create database model for colour pack messages (that the program needs to watch)
-- [] Create code to allow for reaction listeners to be created for all colour pack messages
-
-- [] Implement code that duplicates channels when someone joins a voice channel
