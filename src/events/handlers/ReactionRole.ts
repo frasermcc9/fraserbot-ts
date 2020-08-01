@@ -38,12 +38,19 @@ export default class ReactionRole implements BotEvent {
                 }
 
                 //Get the message object with the reactions on it
-                const rxnMessage = await (rxnChannel as TextChannel).messages.fetch(msg.messageId);
-                if (!rxnMessage) {
-                    return Log.error(
+                const rxnMessage = await (rxnChannel as TextChannel).messages.fetch(msg.messageId).catch(async () => {
+                    Log.warn(
                         "Reaction Role Init",
-                        `Message ${msg.messageId} in channel ${rxnChannel.name} in guild ${rxnGuild.name} could not be found.`
+                        `Message ${msg.messageId} in channel ${rxnChannel.name} in guild ${rxnGuild.name} (${rxnGuild.id}) could not be found. Deleting it from database.`
                     );
+                    const gd = guildData.find((d) => d == guild)!;
+                    const idx = gd.messages.indexOf(msg);
+                    gd.messages.splice(idx, 1);
+                    gd.markModified("messages");
+                    await gd.setLastUpdated();
+                });
+                if (!rxnMessage) {
+                    return;
                 }
 
                 //Get the role object that should be assigned
