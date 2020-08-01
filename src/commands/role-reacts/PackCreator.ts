@@ -232,8 +232,10 @@ export default class CreatePackCommand extends Command {
         const output = new MessageEmbed()
             .setTitle(msgData.title)
             .setDescription(msgData.description)
-            .setImage(msgData.uri)
             .setColor(msgData.color);
+        if (msgData.uri.length > 3) {
+            output.setImage(msgData.uri);
+        }
 
         const addedRoles: Role[] = [];
 
