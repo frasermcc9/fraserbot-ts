@@ -47,6 +47,7 @@ export class Bot extends CommandoClient {
     private registerCommands(): void {
         this.registry
             .registerDefaultTypes()
+            .registerDefaultCommands({ unknownCommand: false })
             .registerGroups([
                 ["core", "Core bot commands"],
                 ["moderation", "Moderation Commands"],
