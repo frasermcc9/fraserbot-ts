@@ -21,8 +21,8 @@ export default abstract class Log {
         this.log("CRITICAL", src, msg, error);
         process.exit();
     }
-    static logo(): void {
-        console.log(chalk.blue(figlet.textSync("Fraserbot-Ts")));
+    static logo(name: string): void {
+        console.log(chalk.blue(figlet.textSync(name)));
         console.log();
     }
 

@@ -4,7 +4,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { EventManager } from "./EventManager";
 import { ReactionCollector } from "discord.js";
-
+dotenv.config();
 export class Bot extends CommandoClient {
     private static readonly bot: Bot = new Bot();
 
@@ -13,7 +13,7 @@ export class Bot extends CommandoClient {
     }
 
     private constructor() {
-        Log.logo();
+        Log.logo(process.env.BOTNAME ?? "");
         Log.trace("Bot", "Starting up bot");
 
         super({
@@ -27,10 +27,9 @@ export class Bot extends CommandoClient {
 
     async start(): Promise<void> {
         return new Promise(async (resolve, reject) => {
-            dotenv.config();
             if (process.env.TOKEN === undefined) {
                 Log.error("Bot", "No token was provided.");
-                return reject(new Error("REPLACEMENT_BOT_TOKEN is not provided"));
+                return reject(new Error("TOKEN is not provided"));
             }
             this.once("ready", () => {
                 Log.info("Bot", `Bot logged in as ${this.user?.tag}`);
@@ -53,7 +52,7 @@ export class Bot extends CommandoClient {
                 ["moderation", "Moderation Commands"],
                 ["colors", "Colour Commands"],
                 ["fun", "Fun Commands"],
-                ["suggestions","Suggestion Commands"]
+                ["suggestions", "Suggestion Commands"],
             ])
             .registerCommandsIn({
                 filter: /^([^.].*)\.(js|ts)$/,
