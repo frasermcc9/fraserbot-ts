@@ -31,6 +31,25 @@ export function getPrefix(this: IServerSettingsDocument): string | undefined {
     return this.prefix;
 }
 
+export async function setSuggestionChannel(this: IServerSettingsDocument, { channelId }: { channelId: string }) {
+    this.suggestions.channel = channelId;
+    return await this.setLastUpdated();
+}
+
+export function getSuggestionChannel(this: IServerSettingsDocument): string | undefined {
+    return this.suggestions.channel;
+}
+
+export async function incrementSuggestions(this: IServerSettingsDocument): Promise<number> {
+    if (this.suggestions.count) {
+        this.suggestions.count += 1;
+    } else {
+        this.suggestions.count = 1;
+    }
+    await this.setLastUpdated();
+    return this.suggestions.count;
+}
+
 //Section: Static Methods (for model)
 
 export async function findOneOrCreate(
@@ -38,7 +57,7 @@ export async function findOneOrCreate(
     { guildId }: { guildId: string }
 ): Promise<IServerSettingsDocument> {
     const record: IServerSettingsDocument | null = await this.findOne({ guildId: guildId });
-    return record ?? (await this.create({ guildId: guildId }));
+    return record ?? (await this.create({ guildId: guildId, suggestions: {} }));
 }
 
 export async function removeGuild(this: IServerSettingsModel, { guildId }: { guildId: string }): Promise<void> {
