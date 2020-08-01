@@ -46,8 +46,9 @@ export class Bot extends CommandoClient {
 
     private registerCommands(): void {
         this.registry
+            .registerDefaultGroups()
             .registerDefaultTypes()
-            .registerDefaultCommands({ unknownCommand: false })
+            .registerDefaultCommands({ unknownCommand: false, ping: false, prefix: false })
             .registerGroups([
                 ["core", "Core bot commands"],
                 ["moderation", "Moderation Commands"],
@@ -55,6 +56,7 @@ export class Bot extends CommandoClient {
                 ["fun", "Fun Commands"],
                 ["suggestions", "Suggestion Commands"],
             ])
+
             .registerCommandsIn({
                 filter: /^([^.].*)\.(js|ts)$/,
                 dirname: path.join(__dirname, "commands"),
