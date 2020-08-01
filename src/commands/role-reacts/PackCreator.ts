@@ -27,13 +27,6 @@ export default class CreatePackCommand extends Command {
             description: "Setup guide for creating a colour-pack.",
             userPermissions: ["ADMINISTRATOR"],
             guildOnly: true,
-            args: [
-                {
-                    key: "auto",
-                    prompt: "Should I automatically add reactions to this message?",
-                    type: "boolean",
-                },
-            ],
         });
     }
 
@@ -55,16 +48,20 @@ export default class CreatePackCommand extends Command {
      * @param message the calling message
      * @param param1 input args
      */
-    async run(message: CommandoMessage, { auto }: { auto: boolean }): Promise<Message> {
+    async run(message: CommandoMessage): Promise<Message> {
         let finalMsg;
         try {
-            await this.userConfirm(message);
+            const auto = await this.userConfirm(message);
 
             const roles = await this.getRolesToAdd(message);
             const msgInfo = await this.getMessageInfo(message);
             const reactMsg = await this.execute(message, roles, msgInfo);
             if (auto) await this.executeReactions(reactMsg.msg, reactMsg.roles);
-            finalMsg = message.channel.send("Colour Pack Created!");
+            const extraInfo =
+                roles.length > 10
+                    ? "Auto reactions need less than 10 roles added. Manual role reactions will be needed."
+                    : "";
+            finalMsg = message.channel.send("Colour Pack Created! " + extraInfo);
         } catch (e) {
             finalMsg = message.channel.send(e);
         }
@@ -76,18 +73,22 @@ export default class CreatePackCommand extends Command {
      * Initial input handler for confirming the user wishes to make a pack
      * @param message the invoking message
      */
-    private async userConfirm(message: CommandoMessage): Promise<void> {
+    private async userConfirm(message: CommandoMessage): Promise<boolean> {
         const replyMsg = await message.channel.send(this.userConfirmEmbed());
         return new Promise((res, rej) => {
             this.createCollector(message, 30)
                 .once("collect", async (data) => {
                     replyMsg.delete().catch(() => {});
                     const m = data as Message;
-                    const candidate = findBestMatch(m.content, this.options).bestMatch.target;
+                    const options = ["cancel", "yes", "no"];
+                    const candidate = findBestMatch(m.content, options).bestMatch.target;
                     if (candidate == "cancel") {
                         rej("Cancelled!");
                     } else {
-                        res();
+                        let returnValue: boolean;
+                        if (candidate == "yes") returnValue = true;
+                        else returnValue = false;
+                        res(returnValue);
                     }
                 })
                 .on("end", () => rej("Ran out of time."));
@@ -100,7 +101,11 @@ export default class CreatePackCommand extends Command {
         return new MessageEmbed()
             .setTitle("Colour Pack Creator")
             .setDescription("This guide will walk you through creating a colour pack!")
-            .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
+            .addField(
+                "First Step",
+                "Would you like me to automatically add reactions and link them to the created roles? (yes/no)"
+            )
+            .setFooter("Cancel at any time by saying 'cancel'.")
             .setColor("#03c6fc");
     }
 
@@ -112,7 +117,7 @@ export default class CreatePackCommand extends Command {
         const roleData: { name: string; color: string }[] = [];
         const replyMsg = await message.channel.send(this.rolesToAddEmbed());
         return new Promise((res, rej) => {
-            const MC = this.createCollector(message, 180)
+            const MC = this.createCollector(message, 300)
                 .on("collect", async (data) => {
                     const m = data as Message;
 
@@ -148,6 +153,7 @@ export default class CreatePackCommand extends Command {
                 "To create the settings of the colour, reply with the following syntax:\n [Name]#[HexColour]"
             )
             .addField("Example", "My Cool Role#03c6fc")
+            .addField("Next Step", "Simply keep replying with roles until you are done. Then type 'continue'.")
             .setFooter("Type 'continue' to carry on, or cancel at any time by saying 'cancel'.")
             .setColor("#03c6fc");
     }
@@ -171,7 +177,7 @@ export default class CreatePackCommand extends Command {
         );
 
         return new Promise((res, rej) => {
-            const MC = this.createCollector(message, 120)
+            const MC = this.createCollector(message, 180)
                 .on("collect", async (data) => {
                     const m = data as Message;
                     if (m.content == "cancel") {
