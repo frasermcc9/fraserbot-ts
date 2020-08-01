@@ -10,7 +10,6 @@ import {
     ReactionCollector,
 } from "discord.js";
 import { findBestMatch } from "string-similarity";
-import { executionAsyncResource } from "async_hooks";
 import Log from "../../helpers/Log";
 import { ReactMessageModel } from "../../database/models/ReactMessage/ReactMessage.model";
 import { Bot } from "../../Bot";
