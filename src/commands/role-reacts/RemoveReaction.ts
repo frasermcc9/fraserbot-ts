@@ -21,7 +21,7 @@ export default class RemoveReactionCommand extends Command {
                 },
                 {
                     key: "messageId",
-                    prompt: "The message the reactions should be added to",
+                    prompt: "The message the reactions should be removed from",
                     type: "string",
                 },
                 {
