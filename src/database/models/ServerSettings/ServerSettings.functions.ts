@@ -41,13 +41,9 @@ export function getSuggestionChannel(this: IServerSettingsDocument): string | un
 }
 
 export async function incrementSuggestions(this: IServerSettingsDocument): Promise<number> {
-    if (this.suggestions.count) {
-        this.suggestions.count += 1;
-    } else {
-        this.suggestions.count = 1;
-    }
+    this.suggestions.counter += 1;
     await this.setLastUpdated();
-    return this.suggestions.count;
+    return this.suggestions.counter;
 }
 
 //Section: Static Methods (for model)
@@ -57,7 +53,7 @@ export async function findOneOrCreate(
     { guildId }: { guildId: string }
 ): Promise<IServerSettingsDocument> {
     const record: IServerSettingsDocument | null = await this.findOne({ guildId: guildId });
-    return record ?? (await this.create({ guildId: guildId, suggestions: {} }));
+    return record ?? (await this.create({ guildId: guildId, suggestions: { counter: 0 } }));
 }
 
 export async function removeGuild(this: IServerSettingsModel, { guildId }: { guildId: string }): Promise<void> {

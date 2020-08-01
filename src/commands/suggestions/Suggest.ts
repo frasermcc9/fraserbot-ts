@@ -10,7 +10,6 @@ export default class SuggestionChannelCommand extends Command {
             group: "suggestions",
             memberName: "suggest",
             description: "Create an anonymous suggestion!",
-            userPermissions: ["ADMINISTRATOR"],
             guildOnly: true,
             args: [
                 {
@@ -25,6 +24,9 @@ export default class SuggestionChannelCommand extends Command {
     }
 
     async run(message: CommandoMessage, { suggestion }: { suggestion: string }): Promise<Message> {
+        if (message.deletable) {
+            await message.delete();
+        }
         const guildSettings = await ServerSettingsModel.findOneOrCreate({ guildId: message.guild.id });
         const channel = guildSettings.getSuggestionChannel();
         if (channel == undefined) {
@@ -32,7 +34,7 @@ export default class SuggestionChannelCommand extends Command {
                 "This server does not have a suggestion channel. If you would like one, ask an administrator to create one!"
             );
         }
-        const channelObj = message.guild.channels.resolve(channel);
+        const channelObj = message.guild.channels.resolve(channel) as TextChannel;
         if (!channelObj) {
             return message.channel.send(
                 "This servers suggestion channel appears to have been deleted. Please ask an administrator to reset it!"
@@ -45,8 +47,9 @@ export default class SuggestionChannelCommand extends Command {
                 "https://cdn.discordapp.com/attachments/737561730967928853/738955669562065006/question-mark-emoji-by-twitter.png"
             )
             .setTitle(`Suggestion #${counter}`)
-            .setDescription(suggestion);
-        const msg = await message.channel.send(output);
+            .setDescription(suggestion)
+            .setColor("#08a4ff");
+        const msg = await channelObj.send(output);
         await msg.react("⬆️");
         await msg.react("⬇️");
         return msg;

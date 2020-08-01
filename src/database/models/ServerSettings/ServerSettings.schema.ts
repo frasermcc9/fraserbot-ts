@@ -18,7 +18,7 @@ const ServerSettingsSchema = new Schema({
     prefix: { type: String, required: false },
     suggestions: {
         channel: { type: String, required: false },
-        counter: { type: Number, required: false },
+        counter: { type: Number, default: 0 },
     },
     dateOfEntry: {
         type: Date,

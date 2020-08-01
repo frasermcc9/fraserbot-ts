@@ -12,7 +12,7 @@ export interface IMemberCount {
     prefix?: string;
     suggestions: {
         channel?: string;
-        count?: number;
+        counter: number;
     };
     dateOfEntry?: Date;
     lastUpdated?: Date;
