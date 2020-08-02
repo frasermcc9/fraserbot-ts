@@ -20,6 +20,11 @@ export default class DadReply implements BotEvent {
             const string = message.content.slice(4)
             return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
         }
+
+        else if(content.startsWith("i`m ")){
+            const string = message.content.slice(4)
+            return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
+        }
         
         else if(content.startsWith("i am ")){
             const string = message.content.slice(5)
