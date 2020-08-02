@@ -20,7 +20,8 @@ tsc
 
 Create a project root level file called `.env` and add two lines: <br /> \
 `TOKEN = DISCORD_TOKEN`<br /> \
-`DATABASE = DATABASE_NAME`
+`DATABASE = DATABASE_NAME`<br /> \
+`BOTNAME = BOT_NAME`
 
 ### Run
 
