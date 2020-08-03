@@ -10,24 +10,25 @@ export default class DadReply implements BotEvent {
     }
 
     private handler = async (message: Message) => {
+        if (!message.guild || message.author.bot) {
+            return;
+        }
+        if (this.client.GuildSettingsCache.get(message.guild.id)?.dadBot != true) {
+            return;
+        }
+        if (Math.random() < 0.8) return;
         const content = message.content.toLowerCase();
-        if(content.startsWith("im ")){
-            const string = message.content.slice(3)
+        if (content.startsWith("im ")) {
+            const string = message.content.slice(3);
             return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
-        }
-
-        else if(content.startsWith("i'm ")){
-            const string = message.content.slice(4)
+        } else if (content.startsWith("i'm ")) {
+            const string = message.content.slice(4);
             return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
-        }
-
-        else if(content.startsWith("i`m ")){
-            const string = message.content.slice(4)
+        } else if (content.startsWith("i`m ")) {
+            const string = message.content.slice(4);
             return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
-        }
-        
-        else if(content.startsWith("i am ")){
-            const string = message.content.slice(5)
+        } else if (content.startsWith("i am ")) {
+            const string = message.content.slice(5);
             return message.channel.send(`Hi ${string}, I'm ${process.env.BOTNAME}!`);
         }
     };
