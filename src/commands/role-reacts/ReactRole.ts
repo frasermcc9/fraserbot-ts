@@ -8,7 +8,7 @@ export default class ReactRoleCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "reactrole",
-            group: "moderation",
+            group: "roles",
             memberName: "reactrole",
             description: "Gives users a role when they react.",
             userPermissions: ["ADMINISTRATOR"],

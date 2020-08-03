@@ -16,7 +16,7 @@ export default class DeclareSeparatorCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "declareseparator",
-            group: "colors",
+            group: "roles",
             memberName: "declareseparator",
             description: "Declares a separator role for colours.",
             userPermissions: ["ADMINISTRATOR"],

@@ -8,7 +8,7 @@ export default class RemoveReactionCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "removereaction",
-            group: "moderation",
+            group: "roles",
             memberName: "removereaction",
             description: "Removes a role reaction.",
             userPermissions: ["ADMINISTRATOR"],

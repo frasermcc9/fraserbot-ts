@@ -22,7 +22,7 @@ export default class CreatePackCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "createpack",
-            group: "colors",
+            group: "roles",
             memberName: "createpack",
             description: "Setup guide for creating a colour-pack.",
             userPermissions: ["ADMINISTRATOR"],
