@@ -7,7 +7,7 @@ export default class ChannelDuplicatorCommand extends Command {
         super(client, {
             name: "channelduplicator",
             aliases: ["channel-duplicator"],
-            group: "moderation",
+            group: "config",
             memberName: "channelduplicator",
             userPermissions: ["ADMINISTRATOR"],
             description:

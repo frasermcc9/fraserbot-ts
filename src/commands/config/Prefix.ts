@@ -6,7 +6,7 @@ export default class PrefixCommand extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "prefix",
-            group: "core",
+            group: "config",
             memberName: "prefix",
             description: "Show or set this server's prefix",
             userPermissions: ["ADMINISTRATOR"],

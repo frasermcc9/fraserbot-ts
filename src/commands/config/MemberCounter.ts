@@ -7,7 +7,7 @@ export default class MemberCounterCommand extends Command {
         super(client, {
             name: "membercounter",
             aliases: ["member-counter"],
-            group: "moderation",
+            group: "config",
             memberName: "membercounter",
             description: "Set up a channel to count member changes.",
             userPermissions: ["ADMINISTRATOR"],
