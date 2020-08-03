@@ -12,7 +12,7 @@ export default class AddCommandCommand extends Command {
             memberName: "addcommand",
             description: "Add a custom command for this guild.",
             guildOnly: true,
-            userPermissions: ["MANAGE_GUILD"],
+            userPermissions: ["MANAGE_CHANNELS"],
             args: [
                 {
                     key: "command",

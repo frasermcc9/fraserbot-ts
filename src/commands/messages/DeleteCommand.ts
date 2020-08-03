@@ -12,7 +12,7 @@ export default class DeleteCommandCommand extends Command {
             memberName: "deletecommand",
             description: "Delete a custom command from this guild.",
             guildOnly: true,
-            userPermissions: ["MANAGE_GUILD"],
+            userPermissions: ["MANAGE_CHANNELS"],
             args: [
                 {
                     key: "command",
