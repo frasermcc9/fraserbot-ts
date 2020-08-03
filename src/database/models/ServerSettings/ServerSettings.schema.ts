@@ -10,6 +10,10 @@ import {
     setSuggestionChannel,
     getSuggestionChannel,
     incrementSuggestions,
+    setDadbot,
+    addCommand,
+    deleteCommand,
+    getCommands,
 } from "./ServerSettings.functions";
 
 const ServerSettingsSchema = new Schema({
@@ -20,6 +24,8 @@ const ServerSettingsSchema = new Schema({
         channel: { type: String, required: false },
         counter: { type: Number, default: 0 },
     },
+    dadBot: { type: Boolean, required: false },
+    guildCommands: { type: Map, required: false },
     dateOfEntry: {
         type: Date,
         default: new Date(),
@@ -35,11 +41,20 @@ ServerSettingsSchema.statics.removeGuild = removeGuild;
 
 ServerSettingsSchema.methods.setMemberCountChannel = setMemberCountChannel;
 ServerSettingsSchema.methods.getMemberCountChannel = getMemberCountChannel;
+
 ServerSettingsSchema.methods.setPrefix = setPrefix;
 ServerSettingsSchema.methods.getPrefix = getPrefix;
+
 ServerSettingsSchema.methods.setSuggestionChannel = setSuggestionChannel;
 ServerSettingsSchema.methods.getSuggestionChannel = getSuggestionChannel;
 ServerSettingsSchema.methods.incrementSuggestions = incrementSuggestions;
+
+ServerSettingsSchema.methods.setDadbot = setDadbot;
+
+ServerSettingsSchema.methods.addCommand = addCommand;
+ServerSettingsSchema.methods.deleteCommand = deleteCommand;
+ServerSettingsSchema.methods.getCommands = getCommands;
+
 ServerSettingsSchema.methods.setLastUpdated = setLastUpdated;
 
 export default ServerSettingsSchema;

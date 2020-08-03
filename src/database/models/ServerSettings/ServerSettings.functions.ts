@@ -1,4 +1,6 @@
 import { IServerSettingsDocument, IServerSettingsModel } from "./ServerSettings.model";
+import { Bot } from "../../../Bot";
+import { throws } from "assert";
 
 //Section: Instance Methods (for document)
 
@@ -46,14 +48,50 @@ export async function incrementSuggestions(this: IServerSettingsDocument): Promi
     return this.suggestions.counter;
 }
 
+export async function setDadbot(this: IServerSettingsDocument, { setting }: { setting: boolean }): Promise<void> {
+    this.dadBot = setting;
+    return await this.setLastUpdated();
+}
+
+export async function addCommand(
+    this: IServerSettingsDocument,
+    { name, response }: { name: string; response: string }
+): Promise<void> {
+    if (this.guildCommands == undefined) {
+        this.guildCommands = new Map<string, string>();
+    }
+    this.guildCommands.set(name, response);
+    await this.setLastUpdated();
+}
+
+export async function deleteCommand(this: IServerSettingsDocument, { name }: { name: string }): Promise<boolean> {
+    const result = this.guildCommands?.has(name);
+    this.guildCommands?.delete(name);
+    Bot.Get.destroyCommandListener(this.guildId, name);
+    await this.setLastUpdated();
+    return result ?? false;
+}
+
+export async function getCommands(this: IServerSettingsDocument): Promise<Map<string, string>> {
+    if (this.guildCommands == undefined) {
+        this.guildCommands = new Map<string, string>();
+        await this.setLastUpdated();
+    }
+    return this.guildCommands;
+}
+
 //Section: Static Methods (for model)
 
 export async function findOneOrCreate(
     this: IServerSettingsModel,
     { guildId }: { guildId: string }
 ): Promise<IServerSettingsDocument> {
-    const record: IServerSettingsDocument | null = await this.findOne({ guildId: guildId });
-    return record ?? (await this.create({ guildId: guildId, suggestions: { counter: 0 } }));
+    let record: IServerSettingsDocument | null = await this.findOne({ guildId: guildId });
+    if (record == null) {
+        record = await this.create({ guildId: guildId, suggestions: { counter: 0 }, guildCommands: new Map() });
+        Bot.Get.refreshCachePoint(record);
+    }
+    return record;
 }
 
 export async function removeGuild(this: IServerSettingsModel, { guildId }: { guildId: string }): Promise<void> {
