@@ -61,6 +61,7 @@ export class Bot extends CommandoClient {
                 ["suggestions", "Suggestion Commands"],
                 ["config", "Commands for bot settings in this server"],
                 ["messages", "Custom commands and quotes"],
+                ["wiki", "Commands for the wiki"],
             ])
 
             .registerCommandsIn({
