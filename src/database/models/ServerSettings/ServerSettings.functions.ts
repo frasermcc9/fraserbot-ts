@@ -1,4 +1,4 @@
-import { IServerSettingsDocument, IServerSettingsModel } from "./ServerSettings.model";
+import { IServerSettingsDocument, IServerSettingsModel, WikiEntry } from "./ServerSettings.model";
 import { Bot } from "../../../Bot";
 import { throws } from "assert";
 
@@ -10,6 +10,7 @@ export async function setLastUpdated(this: IServerSettingsDocument): Promise<voi
         this.lastUpdated = now;
         await this.save();
     }
+    Bot.Get.refreshCachePoint(this);
 }
 
 export function getMemberCountChannel(this: IServerSettingsDocument): string | undefined {
@@ -80,6 +81,57 @@ export async function getCommands(this: IServerSettingsDocument): Promise<Map<st
     return this.guildCommands;
 }
 
+export async function setWikiEnabled(this: IServerSettingsDocument, { setting }: { setting: boolean }): Promise<void> {
+    this.wiki.enabled = setting;
+    this.markModified("wiki");
+    await this.setLastUpdated();
+}
+export function getWikiEntry(this: IServerSettingsDocument, { title }: { title: string }): WikiEntry | undefined {
+    return this.wiki.entries[title];
+}
+export async function deleteWikiEntry(this: IServerSettingsDocument, { title }: { title: string }): Promise<boolean> {
+    if (this.wiki.entries[title]) {
+        delete this.wiki.entries[title];
+        this.markModified("wiki");
+        await this.setLastUpdated();
+        return true;
+    } else {
+        return false;
+    }
+}
+export async function updateWikiEntry(
+    this: IServerSettingsDocument,
+    { title, content, author }: { title: string; content: string; author: string }
+): Promise<void> {
+    const current = this.wiki.entries[title];
+    if (current == undefined) {
+        this.wiki.entries[title] = {
+            title: title,
+            authors: [[author, new Date()]],
+            content: content,
+        };
+    } else {
+        this.wiki.entries[title].title = title;
+        this.wiki.entries[title].authors.push([author, new Date()]);
+        this.wiki.entries[title].content = content;
+    }
+    this.markModified("wiki");
+    await this.setLastUpdated();
+}
+
+export async function setWikiContentManager(
+    this: IServerSettingsDocument,
+    { roleId }: { roleId: string }
+): Promise<void> {
+    this.wiki.contentManager = roleId;
+    this.markModified("wiki");
+    await this.setLastUpdated();
+}
+
+export function getWikiContentManager(this: IServerSettingsDocument): string | undefined {
+    return this.wiki.contentManager;
+}
+
 //Section: Static Methods (for model)
 
 export async function findOneOrCreate(
@@ -88,7 +140,12 @@ export async function findOneOrCreate(
 ): Promise<IServerSettingsDocument> {
     let record: IServerSettingsDocument | null = await this.findOne({ guildId: guildId });
     if (record == null) {
-        record = await this.create({ guildId: guildId, suggestions: { counter: 0 }, guildCommands: new Map() });
+        record = await this.create({
+            guildId: guildId,
+            suggestions: { counter: 0 },
+            guildCommands: new Map(),
+            wiki: { enabled: false, entries: {} },
+        });
         Bot.Get.refreshCachePoint(record);
     }
     return record;

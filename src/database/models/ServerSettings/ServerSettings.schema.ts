@@ -14,6 +14,11 @@ import {
     addCommand,
     deleteCommand,
     getCommands,
+    deleteWikiEntry,
+    getWikiEntry,
+    getWikiContentManager,
+    setWikiContentManager,
+    setWikiEnabled,
 } from "./ServerSettings.functions";
 
 const ServerSettingsSchema = new Schema({
@@ -26,6 +31,11 @@ const ServerSettingsSchema = new Schema({
     },
     dadBot: { type: Boolean, required: false },
     guildCommands: { type: Map, required: false },
+    wiki: {
+        enabled: { type: Boolean, default: false },
+        contentManager: { type: String, required: false },
+        entries: {},
+    },
     dateOfEntry: {
         type: Date,
         default: new Date(),
@@ -54,6 +64,12 @@ ServerSettingsSchema.methods.setDadbot = setDadbot;
 ServerSettingsSchema.methods.addCommand = addCommand;
 ServerSettingsSchema.methods.deleteCommand = deleteCommand;
 ServerSettingsSchema.methods.getCommands = getCommands;
+
+ServerSettingsSchema.methods.setWikiEnabled = setWikiEnabled;
+ServerSettingsSchema.methods.deleteWikiEntry = deleteWikiEntry;
+ServerSettingsSchema.methods.getWikiEntry = getWikiEntry;
+ServerSettingsSchema.methods.getWikiContentManager = getWikiContentManager;
+ServerSettingsSchema.methods.setWikiContentManager = setWikiContentManager;
 
 ServerSettingsSchema.methods.setLastUpdated = setLastUpdated;
 
