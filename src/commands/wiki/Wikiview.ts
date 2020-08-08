@@ -17,17 +17,19 @@ export default class WikiViewCommand extends Command {
                     key: "title",
                     prompt: "What wiki entry would you like to see?",
                     type: "string",
-                    default: null,
+                    default: "",
                 },
             ],
         });
     }
 
     async run(message: CommandoMessage, { title }: CommandArguments): Promise<Message> {
+        if (title != "") {
+        }
         return message.channel.send("Not implemented");
     }
 }
 
 interface CommandArguments {
-    title: string | null;
+    title: string;
 }
