@@ -53,6 +53,7 @@ export interface IServerSettingsDocument extends IMemberCount, Document {
     ): Promise<void>;
     setWikiContentManager(this: IServerSettingsDocument, { roleId }: { roleId: string }): Promise<void>;
     getWikiContentManager(this: IServerSettingsDocument): string | undefined;
+    getAllWikiEntries(this: IServerSettingsDocument): {[k: string]: WikiEntry};
 }
 export interface IServerSettingsModel extends Model<IServerSettingsDocument> {
     findOneOrCreate(this: IServerSettingsModel, { guildId }: { guildId: string }): Promise<IServerSettingsDocument>;
