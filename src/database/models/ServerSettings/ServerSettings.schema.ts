@@ -19,6 +19,7 @@ import {
     getWikiContentManager,
     setWikiContentManager,
     setWikiEnabled,
+    getAllWikiEntries,
 } from "./ServerSettings.functions";
 
 const ServerSettingsSchema = new Schema({
@@ -70,7 +71,7 @@ ServerSettingsSchema.methods.deleteWikiEntry = deleteWikiEntry;
 ServerSettingsSchema.methods.getWikiEntry = getWikiEntry;
 ServerSettingsSchema.methods.getWikiContentManager = getWikiContentManager;
 ServerSettingsSchema.methods.setWikiContentManager = setWikiContentManager;
-
+ServerSettingsSchema.methods.getAllWikiEntries = getAllWikiEntries;
 ServerSettingsSchema.methods.setLastUpdated = setLastUpdated;
 
 export default ServerSettingsSchema;

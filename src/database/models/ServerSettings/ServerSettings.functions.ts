@@ -132,6 +132,9 @@ export function getWikiContentManager(this: IServerSettingsDocument): string | u
     return this.wiki.contentManager;
 }
 
+export function getAllWikiEntries(this: IServerSettingsDocument): {[k: string]: WikiEntry} | undefined{
+        return this.wiki.entries;
+}
 //Section: Static Methods (for model)
 
 export async function findOneOrCreate(
