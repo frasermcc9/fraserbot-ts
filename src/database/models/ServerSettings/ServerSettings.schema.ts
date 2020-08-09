@@ -19,6 +19,8 @@ import {
     getWikiContentManager,
     setWikiContentManager,
     setWikiEnabled,
+    getAllWikiEntries,
+    updateWikiEntry,
 } from "./ServerSettings.functions";
 
 const ServerSettingsSchema = new Schema({
@@ -34,7 +36,9 @@ const ServerSettingsSchema = new Schema({
     wiki: {
         enabled: { type: Boolean, default: false },
         contentManager: { type: String, required: false },
-        entries: {},
+        entries: {
+            type: {},
+        },
     },
     dateOfEntry: {
         type: Date,
@@ -68,8 +72,10 @@ ServerSettingsSchema.methods.getCommands = getCommands;
 ServerSettingsSchema.methods.setWikiEnabled = setWikiEnabled;
 ServerSettingsSchema.methods.deleteWikiEntry = deleteWikiEntry;
 ServerSettingsSchema.methods.getWikiEntry = getWikiEntry;
+ServerSettingsSchema.methods.updateWikiEntry = updateWikiEntry;
 ServerSettingsSchema.methods.getWikiContentManager = getWikiContentManager;
 ServerSettingsSchema.methods.setWikiContentManager = setWikiContentManager;
+ServerSettingsSchema.methods.getAllWikiEntries = getAllWikiEntries;
 
 ServerSettingsSchema.methods.setLastUpdated = setLastUpdated;
 

@@ -83,6 +83,10 @@ export async function getCommands(this: IServerSettingsDocument): Promise<Map<st
 
 export async function setWikiEnabled(this: IServerSettingsDocument, { setting }: { setting: boolean }): Promise<void> {
     this.wiki.enabled = setting;
+    if (!this.wiki.entries || this.wiki.entries == {}) {
+        this.wiki.entries = {};
+        await this.updateWikiEntry({ title: "First Wiki Entry", content: "Welcome to the wiki!", author: "Fraserbot" });
+    }
     this.markModified("wiki");
     await this.setLastUpdated();
 }
@@ -132,6 +136,10 @@ export function getWikiContentManager(this: IServerSettingsDocument): string | u
     return this.wiki.contentManager;
 }
 
+export function getAllWikiEntries(this: IServerSettingsDocument): { [k: string]: WikiEntry } {
+    return this.wiki.entries;
+}
+
 //Section: Static Methods (for model)
 
 export async function findOneOrCreate(
@@ -144,7 +152,10 @@ export async function findOneOrCreate(
             guildId: guildId,
             suggestions: { counter: 0 },
             guildCommands: new Map(),
-            wiki: { enabled: false, entries: {} },
+            wiki: {
+                enabled: false,
+                entries: {},
+            },
         });
         Bot.Get.refreshCachePoint(record);
     }

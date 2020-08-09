@@ -11,11 +11,28 @@ export default class WikiCreateCommand extends Command {
             group: "wiki",
             description: "Create a wiki entry",
             guildOnly: true,
+            args: [
+                {
+                    key: "title",
+                    prompt: "What wiki entry would you like to see?",
+                    type: "string",
+                },
+                {
+                    key: "content",
+                    prompt: "What wiki entry would you like to see?",
+                    type: "string",
+                    wait: 60 * 10,
+                },
+            ],
         });
     }
 
     async run(message: CommandoMessage, {}: CommandArguments): Promise<Message> {
-        return message.channel.send("Not implemented");
+        const serverSettings = await ServerSettingsModel.findOneOrCreate({ guildId: message.guild.id });
+        if (!serverSettings.wiki.enabled) {
+            return message.channel.send("The wiki is not enabled in this server. An admin can enable it.");
+        }
+        
     }
 }
 
