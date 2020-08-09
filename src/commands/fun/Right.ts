@@ -2,7 +2,7 @@ import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";i
 import { Message, GuildMember } from "discord.js";
 import { stringify } from "querystring";
 
-export default class LennyCommand extends Command {
+export default class Right extends Command {
     constructor(client: CommandoClient) {
         super(client, {
             name: "right",
