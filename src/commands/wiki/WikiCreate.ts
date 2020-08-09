@@ -14,12 +14,12 @@ export default class WikiCreateCommand extends Command {
             args: [
                 {
                     key: "title",
-                    prompt: "What wiki entry would you like to see?",
+                    prompt: "What wiki entry would you like to create?",
                     type: "string",
                 },
                 {
                     key: "content",
-                    prompt: "What wiki entry would you like to see?",
+                    prompt: "What is the content of this page?",
                     type: "string",
                     wait: 60 * 10,
                 },
@@ -27,13 +27,25 @@ export default class WikiCreateCommand extends Command {
         });
     }
 
-    async run(message: CommandoMessage, {}: CommandArguments): Promise<Message> {
+    async run(message: CommandoMessage, { content, title }: CommandArguments): Promise<Message> {
         const serverSettings = await ServerSettingsModel.findOneOrCreate({ guildId: message.guild.id });
         if (!serverSettings.wiki.enabled) {
             return message.channel.send("The wiki is not enabled in this server. An admin can enable it.");
         }
-        
+        if (serverSettings.getWikiEntry({ title: title }) != undefined) {
+            return message.channel.send("This wiki entry already exists!");
+        } else {
+            await serverSettings.updateWikiEntry({
+                title: title,
+                content: content,
+                author: message.member.displayName,
+            });
+            return message.channel.send(`Wiki entry **${title}** created!`);
+        }
     }
 }
 
-interface CommandArguments {}
+interface CommandArguments {
+    title: string;
+    content: string;
+}
