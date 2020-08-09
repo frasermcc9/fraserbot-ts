@@ -89,9 +89,11 @@ export async function setWikiEnabled(this: IServerSettingsDocument, { setting }:
     this.markModified("wiki");
     await this.setLastUpdated();
 }
+
 export function getWikiEntry(this: IServerSettingsDocument, { title }: { title: string }): WikiEntry | undefined {
     return this.wiki.entries[title];
 }
+
 export async function deleteWikiEntry(this: IServerSettingsDocument, { title }: { title: string }): Promise<boolean> {
     if (this.wiki.entries[title]) {
         delete this.wiki.entries[title];
@@ -102,6 +104,7 @@ export async function deleteWikiEntry(this: IServerSettingsDocument, { title }: 
         return false;
     }
 }
+
 export async function updateWikiEntry(
     this: IServerSettingsDocument,
     { title, content, author }: { title: string; content: string; author: string }
