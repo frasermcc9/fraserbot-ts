@@ -76,7 +76,6 @@ ServerSettingsSchema.methods.updateWikiEntry = updateWikiEntry;
 ServerSettingsSchema.methods.getWikiContentManager = getWikiContentManager;
 ServerSettingsSchema.methods.setWikiContentManager = setWikiContentManager;
 ServerSettingsSchema.methods.getAllWikiEntries = getAllWikiEntries;
-
 ServerSettingsSchema.methods.setLastUpdated = setLastUpdated;
 
 export default ServerSettingsSchema;

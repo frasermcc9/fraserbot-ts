@@ -1,6 +1,5 @@
 import { IServerSettingsDocument, IServerSettingsModel, WikiEntry } from "./ServerSettings.model";
 import { Bot } from "../../../Bot";
-import { throws } from "assert";
 
 //Section: Instance Methods (for document)
 
