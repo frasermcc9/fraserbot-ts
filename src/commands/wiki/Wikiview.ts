@@ -1,9 +1,8 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, Channel, MessageCollector, Collection } from "discord.js";
+import { Message, MessageEmbed, MessageCollector } from "discord.js";
 import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
 import { findBestMatch } from "string-similarity";
-import { MessageChannel } from "worker_threads";
-import { promises } from "fs";
+import OutputHelper from "../../helpers/OutputHelper";
 
 export default class WikiViewCommand extends Command {
     constructor(client: CommandoClient) {
@@ -25,7 +24,6 @@ export default class WikiViewCommand extends Command {
         });
     }
 
-
     async run(message: CommandoMessage, { title }: CommandArguments): Promise<Message> {
         const serverSettings = await ServerSettingsModel.findOneOrCreate({ guildId: message.guild.id });
         if (!serverSettings.wiki.enabled) {
@@ -33,11 +31,30 @@ export default class WikiViewCommand extends Command {
         }
         const entries = serverSettings.getAllWikiEntries();
         const titles = Object.keys(entries);
+        if (titles.length == 0) {
+            return message.channel.send("There are no wiki entries in this server.");
+        }
         let choice = title;
         if (title == "") {
-            const output = new MessageEmbed().setTitle("Server Wiki").setDescription(titles.join("\n") ?? "Nothing");
+            const ordered = OutputHelper.makeAlphabetical(titles.slice());
+            const chunks = OutputHelper.chunkSplit(ordered, 3);
+            const output = new MessageEmbed()
+                .setTitle("Pages in this Server's Wiki")
+                .setDescription("Reply with a page")
+                .addField("Page 1⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀", chunks[0].join("\n") || "(None)", true)
+                .addField("Page 2⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀", chunks[1].join("\n") || "(None)", true)
+                .addField("Page 3⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀", chunks[2].join("\n") || "(None)", true)
+                .setThumbnail(
+                    message.guild.iconURL() ??
+                        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Question_opening-closing.svg/78px-Question_opening-closing.svg.png"
+                )
+                .setColor("#11d486");
             message.channel.send(output);
-            choice = await this.getTitle(message);
+            try {
+                choice = await this.getTitle(message);
+            } catch {
+                return message.channel.send("No reply was provided in time.");
+            }
         }
         const candidate = findBestMatch(choice, titles).bestMatch.target;
         const wikiEntry = entries[candidate];
@@ -45,26 +62,25 @@ export default class WikiViewCommand extends Command {
         const output = new MessageEmbed()
             .setTitle(wikiEntry.title)
             .setDescription(wikiEntry.content)
-            .setFooter(wikiEntry.authors[wikiEntry.authors.length - 1]);
+            .setFooter(wikiEntry.authors[wikiEntry.authors.length - 1])
+            .setColor("#8c11d4");
         return message.channel.send(output);
     }
 
     private getTitle(message: CommandoMessage): Promise<string> {
         return new Promise((resolve, reject) => {
             const filter = (msg: Message) => message.author.id == msg.author.id;
-            new MessageCollector(message.channel, filter, { time: 30 * 1000 }).once("collect", (collected: Message) => {
-                const content: string = collected.content;
-                resolve(content);
-            })
-            .once("end", () => {
-                reject("No reply in time.");
-            });
+            new MessageCollector(message.channel, filter, { time: 30 * 1000 })
+                .once("collect", (collected: Message) => {
+                    const content: string = collected.content;
+                    resolve(content);
+                })
+                .once("end", () => {
+                    reject("No reply in time.");
+                });
         });
     }
-
 }
-
-
 
 interface CommandArguments {
     title: string;
