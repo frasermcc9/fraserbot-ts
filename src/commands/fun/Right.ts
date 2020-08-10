@@ -12,7 +12,7 @@ export default class Right extends Command {
             args: [
                 {
                     key: "member",
-                    prompt: "Who should be kicked?",
+                    prompt: "Mention the person you have an argument with",
                     type: "member",
                 },]
         });
@@ -21,11 +21,14 @@ export default class Right extends Command {
     async run(message: CommandoMessage,{ member }: { member: GuildMember }): Promise<Message> {        
         const num = Math.random();
         let user: string;
-        if(message.author.id == "<@526559520428654592>" || message.mentions.users.first().id == "<@526559520428654592>"){
-            user = "<@526559520428654592>";
+        if(message.author.id == "526559520428654592" || message.mentions.users.first().id == "526559520428654592"){
+            user = "526559520428654592";
+        }
+        else if (message.author.id == "357675387678883840" || message.mentions.users.first().id == "357675387678883840"){
+            return message.channel.send("Acir is always wrong");
         }
         else{
-            if (num){
+            if ( num >= 0.5){
                 user = message.author.id;
             }
             else{
