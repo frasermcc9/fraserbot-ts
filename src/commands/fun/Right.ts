@@ -21,10 +21,10 @@ export default class Right extends Command {
     async run(message: CommandoMessage,{ member }: { member: GuildMember }): Promise<Message> {        
         const num = Math.random();
         let user: string;
-        if(message.author.id == "526559520428654592" || message.mentions.users.first().id == "526559520428654592"){
+        if(message.author.id == "526559520428654592" || member.id == "526559520428654592"){
             user = "526559520428654592";
         }
-        else if (message.author.id == "357675387678883840" || message.mentions.users.first().id == "357675387678883840"){
+        else if (message.author.id == "357675387678883840" || member.id == "357675387678883840"){
             return message.channel.send("Acir is always wrong");
         }
         else{
@@ -32,7 +32,7 @@ export default class Right extends Command {
                 user = message.author.id;
             }
             else{
-                user = member.displayName;
+                user = member.id;
             }
         }
     
