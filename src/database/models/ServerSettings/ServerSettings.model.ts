@@ -8,7 +8,7 @@ export const ServerSettingsModel = model<IServerSettingsDocument>(
 
 export interface IMemberCount {
     guildId: string;
-    channelId?: string;
+    memberCounter?: string;
     prefix?: string;
     suggestions: {
         channel?: string;

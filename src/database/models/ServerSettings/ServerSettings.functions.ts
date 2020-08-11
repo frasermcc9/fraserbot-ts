@@ -13,14 +13,14 @@ export async function setLastUpdated(this: IServerSettingsDocument): Promise<voi
 }
 
 export function getMemberCountChannel(this: IServerSettingsDocument): string | undefined {
-    return this.channelId;
+    return this.memberCounter;
 }
 
 export async function setMemberCountChannel(
     this: IServerSettingsDocument,
     { channelId }: { channelId: string }
 ): Promise<void> {
-    this.channelId = channelId;
+    this.memberCounter = channelId;
     await this.setLastUpdated();
 }
 
