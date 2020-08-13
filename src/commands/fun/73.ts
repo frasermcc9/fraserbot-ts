@@ -15,9 +15,6 @@ export default class num73 extends Command {
         if (message.deletable) {
             message.delete();
         }
-        for(let i = 0; i< 73; i++){
-           await message.channel.send("73");
-        }
-        return message.channel.send("73");
+        return message.channel.send("73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n73 \n");
     }
 }
