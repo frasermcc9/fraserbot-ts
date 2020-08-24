@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import { EventManager } from "./EventManager";
 import { ReactionCollector, MessageCollector as Function, Message } from "discord.js";
 import { ServerSettingsModel, IServerSettingsDocument } from "./database/models/ServerSettings/ServerSettings.model";
+import * as stockClient from "stocksim";
+
 dotenv.config();
 export class Bot extends CommandoClient {
     private static readonly bot: Bot = new Bot();
@@ -45,6 +47,7 @@ export class Bot extends CommandoClient {
                 Log.error("Bot", "Bot failed to log in.", e);
                 reject();
             });
+            this.initiateStockGame();
         });
     }
 
@@ -62,6 +65,7 @@ export class Bot extends CommandoClient {
                 ["config", "Commands for bot settings in this server"],
                 ["messages", "Custom commands and quotes"],
                 ["wiki", "Commands for the wiki"],
+                ["stocks", "Stock market simulator"],
             ])
 
             .registerCommandsIn({
@@ -69,6 +73,15 @@ export class Bot extends CommandoClient {
                 dirname: path.join(__dirname, "commands"),
             });
         Log.info("Bot", "Bot commands registered successfully");
+    }
+
+    private initiateStockGame() {
+        stockClient.Client.CreateClient({
+            dbName: "stocksim",
+            iexKey: process.env.IEX_TOKEN!,
+            uri: "mongodb://localhost:27017",
+            newUserValue: 1000,
+        });
     }
 
     private reactionListeners: Map<string, ReactionCollector>;
