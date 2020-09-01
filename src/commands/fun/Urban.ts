@@ -9,12 +9,14 @@ export default class UrbanCommand extends Command {
             aliases: ["urbandictionary"],
             group: "fun",
             memberName: "urban",
-            description: "Gets the definition of a given word from urban dictionary",
+            description:
+                "Gets the definition of a given word from urban dictionary. If no word is given, gets a random definition.",
             args: [
                 {
                     key: "search",
                     prompt: "What word would you like to look up?",
                     type: "string",
+                    default: "",
                 },
                 {
                     key: "page",
@@ -27,7 +29,16 @@ export default class UrbanCommand extends Command {
     }
 
     async run(message: CommandoMessage, { page, search }: CommandArguments): Promise<Message | Message[]> {
-        const url = "http://api.urbandictionary.com/v0/define?term=" + search;
+        let url: string;
+        let title: string;
+
+        if (search == "") {
+            url = "http://api.urbandictionary.com/v0/random";
+            title = `Random Urban Dictionary Definition: `;
+        } else {
+            url = "http://api.urbandictionary.com/v0/define?term=" + search;
+            title = `Urban Dictionary Definition: `;
+        }
 
         const data = await this.getData(url);
 
@@ -39,7 +50,7 @@ export default class UrbanCommand extends Command {
         const entry = data.list[page];
 
         const output = new MessageEmbed()
-            .setTitle(`Urban Dictionary Definition: ${entry.word}`)
+            .setTitle(`${title}${entry.word}`)
             .setDescription(entry.definition)
             .addField("Example", entry.example)
             .addField("👍", entry.thumbs_up, true)
