@@ -1,6 +1,6 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { Message } from "discord.js";
-import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
+import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 import { Bot } from "../../Bot";
 
 export default class DadbotCommand extends Command {

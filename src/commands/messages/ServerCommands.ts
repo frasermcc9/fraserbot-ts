@@ -1,6 +1,6 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { Message, GuildMember, MessageEmbed } from "discord.js";
-import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
+import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 
 export default class ServerCommandsCommand extends Command {
     constructor(client: CommandoClient) {

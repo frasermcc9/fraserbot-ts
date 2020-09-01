@@ -1,7 +1,7 @@
 import { BotEvent } from "../Events.interface";
 import { Bot } from "../../Bot";
 import Log from "../../helpers/Log";
-import { ServerSettingsModel } from "../../database/models/ServerSettings/ServerSettings.model";
+import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 import { Message } from "discord.js";
 import { CommandoMessage } from "discord.js-commando";
 
