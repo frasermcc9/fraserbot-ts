@@ -18,7 +18,10 @@
     "discord.js-commando": "git+https://github.com/discordjs/Commando.git",
     "dotenv": "^8.2.0",
     "figlet": "^1.5.0",
+    "imageapi.js": "^1.0.16",
     "mongoose": "^5.9.26",
+    "node-fetch": "^2.6.1",
+    "random-puppy": "^1.1.0",
     "require-all": "^3.0.0",
     "stocksim": "git+https://github.com/frasermcc9/stock-sim.git",
     "string-similarity": "^4.0.1",
@@ -27,6 +30,7 @@
   "devDependencies": {
     "@types/figlet": "^1.2.0",
     "@types/mongoose": "^5.7.34",
+    "@types/node-fetch": "^2.5.7",
     "@types/ws": "^7.2.6",
     "typescript": "^3.9.7"
   }

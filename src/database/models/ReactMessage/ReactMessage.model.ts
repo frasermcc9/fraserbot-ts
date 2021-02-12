@@ -5,7 +5,7 @@ export const ReactMessageModel = model<IReactMessageDocument>("reactMessage", Me
 
 export interface IReactionMessage {
     guildId: string;
-    messages: { channelId: string; messageId: string; reaction: string; roleId: string }[];
+    messages: { channelId: string; messageId: string; reaction: string; roleId: string; duration?: number }[];
     separatorRole?: string;
     dateOfEntry?: Date;
     lastUpdated?: Date;
@@ -19,7 +19,8 @@ export interface IReactMessageDocument extends IReactionMessage, Document {
             messageId,
             reaction,
             roleId,
-        }: { messageId: string; channelId: string; reaction: string; roleId: string }
+            duration,
+        }: { messageId: string; channelId: string; reaction: string; roleId: string; duration?: number }
     ): Promise<void>;
     declareSeparator(this: IReactMessageDocument, { roleId }: { roleId: string }): Promise<void>;
     removeReactionListener(

@@ -17,13 +17,15 @@ export async function addReactionListener(
         messageId,
         reaction,
         roleId,
-    }: { messageId: string; channelId: string; reaction: string; roleId: string }
+        duration,
+    }: { messageId: string; channelId: string; reaction: string; roleId: string; duration?: number }
 ): Promise<void> {
     this.messages.push({
         messageId: messageId,
         channelId: channelId,
         reaction: reaction,
         roleId: roleId,
+        duration: duration,
     });
     this.setLastUpdated();
 }

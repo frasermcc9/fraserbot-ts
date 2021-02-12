@@ -71,6 +71,7 @@ export default class ReactionRole implements BotEvent {
                 };
 
                 //Add listeners
+                //TODO Handle durations with new temporary reaction role
                 const collector = new ReactionCollector(rxnMessage, filter, { dispose: true })
                     .on("collect", async (r: MessageReaction, u: User) => {
                         const member = await r.message.guild?.members.fetch(u.id);

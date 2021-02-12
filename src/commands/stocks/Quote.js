@@ -19,6 +19,13 @@ module.exports = class QuoteCommand extends Command {
                     prompt: "What is the symbol of the stock?",
                     type: "string",
                 },
+                {
+                    key: "time",
+                    prompt: "Chart length (6M or 10M)",
+                    oneOf: ["6m", "10m"],
+                    default: "10m",
+                    type: "string",
+                },
             ],
         });
     }
@@ -27,7 +34,7 @@ module.exports = class QuoteCommand extends Command {
      * @param {object} param1
      * @param {string} param1.symbol
      */
-    async run(msg, { symbol }) {
+    async run(msg, { symbol, time }) {
         const sym = new Symbol(symbol);
         const data = await Promise.all([
             sym.FullQuote().catch(() => msg.say("I cannot figure out what symbol that refers to.")),
@@ -61,7 +68,10 @@ module.exports = class QuoteCommand extends Command {
                     true
                 )
                 .setFooter(`Data provided by IEXCloud. Price Source: ${quote.latestSource}`)
-                .setColor(color);
+                .setColor(color)
+                .setImage(
+                    `https://charts2.finviz.com/chart.ashx?t=${symbol}&ta=${time == "6m" ? "0" : "1"}&ty=c&p=d&s=l`
+                );
             if (img) {
                 output.setThumbnail(img.url);
             }

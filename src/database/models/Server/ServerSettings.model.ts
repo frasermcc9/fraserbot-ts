@@ -23,6 +23,7 @@ export interface IMemberCount {
             [k: string]: WikiEntry;
         };
     };
+    
     dateOfEntry?: Date;
     lastUpdated?: Date;
 }
