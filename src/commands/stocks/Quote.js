@@ -42,7 +42,7 @@ module.exports = class QuoteCommand extends Command {
         ]);
         const quote = data[0];
         const img = data[1];
-        if (quote && !quote.message.startsWith("Unknown")) {
+        if (quote && !quote?.message?.startsWith("Unknown")) {
             const emoji = quote.change < 0 ? ":chart_with_downwards_trend:" : ":chart_with_upwards_trend:";
             const color = quote.change < 0 ? "#f22e1f" : "#24c718";
             const operator = quote.change < 0 ? "" : "+";
