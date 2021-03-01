@@ -23,11 +23,12 @@ export default class ReactionRole implements BotEvent {
                 const caller = callers[j];
 
                 const gId = guildData[i].guildId;
-                const fn = (m: CommandoMessage) => {
+                const fn = (m: Message) => {
+                    const cmdMsg = m as CommandoMessage;
                     if (m.guild == null) return;
                     if (m.guild.id != gId) return;
-                    if (!m.argString) return;
-                    if (m.cleanContent.toLowerCase() == `${m.argString}${caller.toLowerCase()}`) {
+                    if (!cmdMsg.argString) return;
+                    if (m.cleanContent.toLowerCase() == `${cmdMsg.argString}${caller.toLowerCase()}`) {
                         return m.channel.send(response);
                     }
                 };

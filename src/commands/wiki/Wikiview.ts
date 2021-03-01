@@ -1,5 +1,5 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, MessageCollector } from "discord.js";
+import { Message, MessageEmbed, MessageCollector, TextChannel, DMChannel } from "discord.js";
 import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 import { findBestMatch } from "string-similarity";
 import OutputHelper from "../../helpers/OutputHelper";
@@ -25,6 +25,9 @@ export default class WikiViewCommand extends Command {
     }
 
     async run(message: CommandoMessage, { title }: CommandArguments): Promise<Message> {
+        if (message.channel.type === "news")
+            return message.channel.send("Cannot use this command in this channel type.");
+
         const serverSettings = await ServerSettingsModel.findOneOrCreate({ guildId: message.guild.id });
         if (!serverSettings.wiki.enabled) {
             return message.channel.send("The wiki is not enabled in this server. An admin can enable it.");
@@ -69,8 +72,10 @@ export default class WikiViewCommand extends Command {
 
     private getTitle(message: CommandoMessage): Promise<string> {
         return new Promise((resolve, reject) => {
+            if (message.channel.type === "news") resolve("");
+
             const filter = (msg: Message) => message.author.id == msg.author.id;
-            new MessageCollector(message.channel, filter, { time: 30 * 1000 })
+            new MessageCollector(message.channel as TextChannel | DMChannel, filter, { time: 30 * 1000 })
                 .once("collect", (collected: Message) => {
                     const content: string = collected.content;
                     resolve(content);

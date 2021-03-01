@@ -40,7 +40,8 @@ export default class AddCommandCommand extends Command {
         Bot.Get.refreshCachePoint(guildSettings);
 
         const gId = message.guild.id;
-        const fn = (m: CommandoMessage) => {
+        const fn = (cmdMsg: Message) => {
+            const m = cmdMsg as CommandoMessage;
             if (m.guild == null) return;
             if (m.guild.id != gId) return;
             if (!m.argString) return;

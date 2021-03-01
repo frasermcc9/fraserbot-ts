@@ -1,5 +1,5 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, MessageCollector } from "discord.js";
+import { Message, MessageEmbed, MessageCollector, TextChannel } from "discord.js";
 import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 import { findBestMatch } from "string-similarity";
 
@@ -32,7 +32,7 @@ export default class WikiDeleteCommand extends Command {
 
         const roleObj = message.guild.roles.resolve(managerRole ?? "");
 
-        if (!message.member.roles.cache.has(roleObj?.id ?? "") && !message.member.hasPermission("ADMINISTRATOR")) {
+        if (!message.member?.roles.cache.has(roleObj?.id ?? "") && !message.member?.hasPermission("ADMINISTRATOR")) {
             return message.channel.send(
                 "You do not have the wiki manager role, you cannot delete content with the delete command. You must use the edit command."
             );
@@ -63,7 +63,7 @@ export default class WikiDeleteCommand extends Command {
     private getTitle(message: CommandoMessage): Promise<string> {
         return new Promise((resolve, reject) => {
             const filter = (msg: Message) => message.author.id == msg.author.id;
-            new MessageCollector(message.channel, filter, { time: 30 * 1000 })
+            new MessageCollector(message.channel as TextChannel, filter, { time: 30 * 1000 })
                 .once("collect", (collected: Message) => {
                     const content: string = collected.content;
                     resolve(content);
@@ -77,7 +77,7 @@ export default class WikiDeleteCommand extends Command {
     private confirmDeletion(message: CommandoMessage): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const filter = (msg: Message) => message.author.id == msg.author.id;
-            new MessageCollector(message.channel, filter, { time: 30 * 1000 })
+            new MessageCollector(message.channel as TextChannel, filter, { time: 30 * 1000 })
                 .once("collect", (collected: Message) => {
                     const content: string = collected.content;
                     if (content == "YES") {

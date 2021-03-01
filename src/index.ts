@@ -3,13 +3,14 @@ import { Bot } from "./Bot";
 import { connect } from "./database/Database";
 import dotenv from "dotenv";
 dotenv.config();
-if (process.env.DATABASE == undefined) {
-    Log.critical("Index", "Database name was not provided in .env.");
+
+if (!process.env.DATABASE || !process.env.DATABASE_URL) {
+    Log.critical("Index", "Database name or URL was not provided in .env.");
 }
 
 export const DatabaseConnection = {
-    name: process.env.DATABASE ?? "",
-    uri: process.env.DATABASE_URL,
+    name: process.env.DATABASE!,
+    uri: process.env.DATABASE_URL!,
 };
 
 connect();

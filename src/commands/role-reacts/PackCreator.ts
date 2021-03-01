@@ -8,6 +8,7 @@ import {
     MessageReaction,
     User,
     ReactionCollector,
+    DMChannel,
 } from "discord.js";
 import { findBestMatch } from "string-similarity";
 import Log from "../../helpers/Log";
@@ -38,9 +39,13 @@ export default class CreatePackCommand extends Command {
      * @param timeout time in seconds before turning off collector
      */
     private createCollector(message: CommandoMessage, timeout: number = 30) {
-        return new MessageCollector(message.channel, (m) => m.author.id == message.author.id, {
-            time: timeout * 1000,
-        });
+        return new MessageCollector(
+            message.channel as TextChannel | DMChannel,
+            (m) => m.author.id == message.author.id,
+            {
+                time: timeout * 1000,
+            }
+        );
     }
 
     /**

@@ -38,7 +38,7 @@ export default class WikiCreateCommand extends Command {
             await serverSettings.updateWikiEntry({
                 title: title,
                 content: content,
-                author: message.member.displayName,
+                author: message.member?.displayName ?? message.author.username,
             });
             return message.channel.send(`Wiki entry **${title}** created!`);
         }

@@ -1,5 +1,5 @@
 import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
-import { Message, MessageEmbed, MessageCollector } from "discord.js";
+import { Message, MessageEmbed, MessageCollector, TextChannel } from "discord.js";
 import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
 import OutputHelper from "../../helpers/OutputHelper";
 import { findBestMatch } from "string-similarity";
@@ -76,7 +76,7 @@ export default class WikiEditCommand extends Command {
         await serverSettings.updateWikiEntry({
             title: candidate,
             content: newContent,
-            author: message.member.displayName,
+            author: message.member?.displayName ?? message.author.username,
         });
         return message.channel.send("Updated!");
     }
@@ -89,7 +89,7 @@ export default class WikiEditCommand extends Command {
     private awaitReply(message: CommandoMessage, timeout: number): Promise<string> {
         return new Promise((resolve, reject) => {
             const filter = (msg: Message) => message.author.id == msg.author.id;
-            new MessageCollector(message.channel, filter, { time: timeout * 1000 })
+            new MessageCollector(message.channel as TextChannel, filter, { time: timeout * 1000 })
                 .once("collect", (collected: Message) => {
                     const content: string = collected.content;
                     resolve(content);

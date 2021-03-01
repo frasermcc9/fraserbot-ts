@@ -25,6 +25,7 @@ export class Bot extends CommandoClient {
             invite: "https://discord.gg/rwFhQ9V",
             disableMentions: "everyone",
         });
+        this.setMaxListeners(Infinity);
         this.reactionListeners = new Map();
         this.commandListeners = new Map();
         this.guildSettingsCache = new Map();
@@ -95,8 +96,8 @@ export class Bot extends CommandoClient {
         this.reactionListeners.delete(key);
     }
 
-    private commandListeners: Map<string, (m: CommandoMessage) => void>;
-    public storeCommandListener(fn: (m: CommandoMessage) => void, guildId: string, commandName: string) {
+    private commandListeners: Map<string, (m: Message) => void>;
+    public storeCommandListener(fn: (m: Message) => void, guildId: string, commandName: string) {
         const key = guildId + commandName;
         this.commandListeners.set(key, fn);
     }

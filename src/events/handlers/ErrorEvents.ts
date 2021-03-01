@@ -3,6 +3,7 @@ import { Bot } from "../../Bot";
 import Log from "../../helpers/Log";
 import { GuildMember } from "discord.js";
 import { ServerSettingsModel } from "../../database/models/Server/ServerSettings.model";
+import { Command, CommandoMessage } from "discord.js-commando";
 
 export default class DebugOutput implements BotEvent {
     private client: Bot = Bot.Get;
@@ -12,7 +13,7 @@ export default class DebugOutput implements BotEvent {
         this.client.on("warn", (info: string) => Log.warn("Bot", info));
         this.client.on("error", (info: Error) => Log.error("Bot", "Error occurred", info));
 
-        this.client.on("commandError", (command, error, message) => {
+        this.client.on("commandError", (command, error, message, _, __) => {
             Log.error("Command Error", `Error with ${command.name}. Message sent: ${message.content}.`, error);
         });
     }
