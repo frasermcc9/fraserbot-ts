@@ -24,23 +24,5 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --quiet --only=production
 
-RUN --mount=type=secret,id=TOKEN
-RUN --mount=type=secret,id=IEX_TOKEN
-
-ARG TOKEN=$(cat /run/secrets/TOKEN)
-ENV TOKEN=${TOKEN}
-
-ARG IEX_TOKEN=$(cat /run/secrets/IEX_TOKEN)
-ENV IEX_TOKEN=${IEX_TOKEN}
-
-ARG DATABASE=fraserbot-ts
-ENV DATABASE=${DATABASE}
-ARG BOTNAME=fraserbot-Ts
-ENV BOTNAME=${BOTNAME}
-ARG DATABASE_URL=mongodb://192.168.1.120:42073
-ENV DATABASE_URL=${DATABASE_URL}
-
 ## We just need the build to execute the command
 COPY --from=builder /usr/src/app/build ./build
-
-CMD TOKEN=$TOKEN DATABASE=$DATABASE BOTNAME=$BOTNAME IEX_TOKEN=$IEX_TOKEN DATABASE_URL=$DATABASE_URL node build/index.js
