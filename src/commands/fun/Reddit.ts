@@ -28,8 +28,6 @@ export default class RedditCommand extends Command {
             const json = await res.json();
             const img = json[0]?.data?.children[0]?.data?.url;
             if (img) {
-                console.log(img);
-
                 return message.channel.send("|| " + img + " ||");
             } else {
                 throw new Error();

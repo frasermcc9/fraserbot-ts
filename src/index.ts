@@ -9,7 +9,7 @@ if (process.env.DATABASE == undefined) {
 
 export const DatabaseConnection = {
     name: process.env.DATABASE ?? "",
-    uri: "mongodb://localhost:27017",
+    uri: process.env.DATABASE_URL,
 };
 
 connect();

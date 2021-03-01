@@ -17,7 +17,7 @@ export class Bot extends CommandoClient {
 
     private constructor() {
         Log.logo(process.env.BOTNAME ?? "");
-        Log.trace("Bot", "Starting up bot");
+        Log.trace("Bot", `Starting up bot with name ${process.env.BOTNAME}`);
 
         super({
             commandPrefix: "%",
