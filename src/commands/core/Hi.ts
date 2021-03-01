@@ -12,6 +12,6 @@ export default class HiCommand extends Command {
     }
 
     async run(message: CommandoMessage, args: any): Promise<Message> {
-        return message.channel.send("Hi!");
+        return message.channel.send(`Hi ${message.member?.nickname ?? message.author.username}!`);
     }
 }
