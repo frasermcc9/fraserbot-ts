@@ -10,7 +10,7 @@ export default class DadReply implements BotEvent {
     }
 
     private handler = async (message: Message) => {
-        if (message.content === ":)") {
+        if (message.content === ":)" && !message.author.bot) {
             return message.channel.send(":)");
         }
     };
