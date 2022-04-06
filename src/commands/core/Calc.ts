@@ -1,6 +1,6 @@
-import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
 import { Message } from "discord.js";
-import mexp from "math-expression-evaluator";
+import { Command, CommandoClient, CommandoMessage } from "discord.js-commando";
+import { evaluate } from "mathjs";
 
 export default class CalcCommand extends Command {
     constructor(client: CommandoClient) {
@@ -21,6 +21,6 @@ export default class CalcCommand extends Command {
     }
 
     async run(message: CommandoMessage, { expression }: { expression: string }): Promise<Message> {
-        return message.channel.send(mexp.eval(expression));
+        return message.channel.send(evaluate(expression));
     }
 }
